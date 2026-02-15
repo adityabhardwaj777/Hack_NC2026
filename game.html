@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Simulator | SecureBank</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --success: #00875A;
+            --danger: #DE350B;
+            --warning: #FF8B00;
+            --bg-app: #0f0f14;
+            --bg-card: #1a1a24;
+            --bg-elevated: #242430;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6b6b7b;
+            --border: #2d2d3a;
+            --radius: 12px;
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg-app); color: var(--text-primary); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+        .navbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .nav-tabs { display: flex; gap: 0.5rem; }
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .nav-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .nav-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .game-panel { display: none; animation: fadeIn 0.3s ease; }
+        .game-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page-header { text-align: center; margin-bottom: 2rem; }
+        .page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary), #667eea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .page-header p { color: var(--text-secondary); }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; }
+
+        .sim-options { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; }
+        .sim-option {
+            padding: 1rem 2rem;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .sim-option:hover { border-color: var(--primary); }
+        .sim-option.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .sim-option.disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .stock-picker { margin-bottom: 1.5rem; }
+        .stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+        .stock-chip {
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .stock-chip:hover { border-color: var(--primary); }
+        .stock-chip.selected { background: rgba(0,102,255,0.2); border-color: var(--primary); }
+
+        .sim-invest { margin-bottom: 1.5rem; }
+        .sim-invest label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .sim-invest input { width: 100%; max-width: 200px; padding: 0.75rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; }
+
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 0.95rem; transition: all 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-secondary { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+        .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); max-width: 500px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 1.5rem; }
+        .modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+        .modal-close { float: right; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; line-height: 1; }
+
+        .sim-result {
+            background: linear-gradient(135deg, #1a2a4a 0%, #2a1a4a 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+        .sim-result h3 { margin-bottom: 1rem; font-size: 1.25rem; }
+        .sim-result-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .sim-result-row:last-child { border-bottom: none; }
+        .sim-result-value { font-family: 'Space Mono', monospace; font-weight: 700; }
+        .sim-result-value.positive { color: var(--success); }
+        .sim-result-value.negative { color: var(--danger); }
+        .sim-result-total { font-size: 1.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border); }
+        .sim-loading { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .sim-error { color: var(--danger); padding: 1rem; background: rgba(222,53,11,0.15); border-radius: 8px; margin-top: 1rem; }
+
+        .tip-badge { display: inline-block; margin-left: 0.5rem; padding: 0.25rem 0.5rem; background: rgba(255,139,0,0.2); border-radius: 6px; font-size: 0.8rem; cursor: help; color: var(--warning); }
+        .timeline-controls { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+        .timeline-slider { flex: 1; min-width: 150px; height: 8px; -webkit-appearance: none; background: var(--bg-elevated); border-radius: 4px; }
+        .timeline-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .market-moment { background: linear-gradient(135deg, rgba(0,102,255,0.1) 0%, rgba(102,126,234,0.1) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1rem; font-size: 0.95rem; }
+        .market-moment strong { color: var(--primary); }
+        .achievements-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .achievement-badge { padding: 0.35rem 0.75rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; color: var(--text-secondary); }
+        .achievement-badge.earned { border-color: var(--success); color: var(--success); }
+        .competitive-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        .leaderboard-mini .leaderboard-ranks { font-size: 0.9rem; font-weight: 600; }
+        .leaderboard-mini .rank-item { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem; }
+        .leaderboard-mini .rank-1 { color: #FFD700; }
+        .leaderboard-mini .rank-2 { color: #C0C0C0; }
+        .leaderboard-mini .rank-3 { color: #CD7F32; }
+
+        .growth-chart-wrap { margin: 1rem 0; }
+        .growth-chart { width: 100%; height: 260px; background: var(--bg-elevated); border-radius: 8px; position: relative; }
+        .growth-chart svg { display: block; width: 100%; height: 100%; }
+        .growth-chart-legend { display: flex; gap: 1.5rem; margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); }
+        .chart-legend-item { display: flex; align-items: center; gap: 0.35rem; }
+
+        .stat-card { background: var(--bg-elevated); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); }
+        .stat-value { font-size: 1.75rem; font-weight: 700; font-family: 'Space Mono', monospace; }
+        .stat-value.positive { color: var(--success); }
+        .stat-value.negative { color: var(--danger); }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+
+        .trading-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .trading-tab { padding: 0.5rem 1rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--text-secondary); cursor: pointer; font-weight: 500; }
+        .trading-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        .asset-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .asset-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--bg-elevated); border-radius: 8px; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
+        .asset-row:hover, .asset-row.selected { border-color: var(--primary); background: rgba(0,102,255,0.1); }
+        .asset-symbol { font-weight: 700; }
+        .asset-change.up { color: var(--success); }
+        .asset-change.down { color: var(--danger); }
+
+        .trade-panel { display: grid; gap: 1rem; }
+        .trade-input { width: 100%; padding: 0.75rem; background: var(--bg-app); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); }
+        .trade-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .game-container { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: var(--radius); padding: 2.5rem; text-align: center; }
+        .game-question { background: rgba(255,255,255,0.15); padding: 2rem; border-radius: var(--radius); margin: 1.5rem 0; }
+        .game-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .game-option { padding: 1rem; background: rgba(255,255,255,0.2); border: 2px solid transparent; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .game-option:hover { background: rgba(255,255,255,0.3); }
+        .game-option.correct { border-color: #00C781; background: rgba(0,199,129,0.3); }
+        .game-option.incorrect { border-color: #FF5630; background: rgba(255,86,48,0.3); }
+
+        .trading-layout { display: grid; grid-template-columns: 1fr minmax(280px, 320px); gap: 1.5rem; }
+        @media (max-width: 768px) {
+            .trading-layout { grid-template-columns: 1fr !important; }
+            .navbar { flex-wrap: wrap; padding: 1rem; }
+            .nav-tabs { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">🏦 SecureBank · Stock Simulator</a>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-panel="simulator">Stock Simulator</button>
+            <button class="nav-tab" data-panel="trading">Live Trading</button>
+            <button class="nav-tab" data-panel="quiz">Financial Quiz</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Stock Simulator Panel (2 options) -->
+        <div id="panel-simulator" class="game-panel active">
+            <div class="page-header">
+                <h1>Stock Simulator</h1>
+                <p>Choose a simulation mode. Option 1 is an interactive, risk-free game using real 2023–now data. Option 2 is live real-time.</p>
+            </div>
+
+            <div class="sim-options">
+                <button class="sim-option active" data-option="2023">Option 1: 2023 Historical</button>
+                <button class="sim-option" data-option="live">Option 2: Live Simulator</button>
+            </div>
+
+            <!-- Option 2: Live Simulator (hidden by default) -->
+            <div id="sim-live" class="card" style="display:none;">
+                <div class="card-title">📊 Live Stock Simulator — Up to $300,000</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Pick 5 stocks and invest up to $300,000. Real-time prices via MASSIVE/Yahoo. Track growth with daily reports.</p>
+
+                <div class="sim-invest">
+                    <label>Total to invest ($1 - $300,000):</label>
+                    <input type="number" id="liveInvestTotal" value="100000" min="1" max="300000" step="1000">
+                </div>
+
+                <div class="stock-picker">
+                    <div class="card-title">Select 5 stocks:</div>
+                    <div class="stock-grid" id="liveStockPicker"></div>
+                    <p id="liveStockCount" style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.9rem;">0 / 5 selected</p>
+                </div>
+
+                <button class="btn btn-primary" id="btnStartLive" disabled>Start Live Simulation</button>
+
+                <div id="liveSimActive" style="display:none; margin-top: 1.5rem;">
+                    <div class="stats-row">
+                        <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);">Invested</div><div class="stat-value" id="liveInvested">$0</div></div>
+                        <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);">Current Value</div><div class="stat-value" id="liveValue">$0</div></div>
+                        <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);">Gain/Loss</div><div class="stat-value" id="liveGain">$0</div></div>
+                    </div>
+                    <div class="card" style="margin-top: 1rem;">
+                        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+                            <span>📈 Daily Report</span>
+                            <button class="btn btn-secondary" id="btnStockFacts" style="padding:0.4rem 0.8rem;font-size:0.85rem;">Stock Facts</button>
+                        </div>
+                        <div id="dailyReport"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 1: 2023 Historical Interactive Simulator -->
+            <div id="sim-2023" class="card">
+                <div class="card-title">🎮 2023 → Now: Interactive Stock Market Simulator</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Risk-free, competitive gameplay. Pick 5 stocks and compete against 2 AIs (Bull & Hawk)—they pick 3 stocks by historical performance + 2 random. Real 2023→now data.</p>
+
+                <div id="sim2023Setup">
+                    <div class="sim-invest">
+                        <label>Starting capital (virtual money, risk-free):</label>
+                        <input type="number" id="simInvestAmount" value="50000" min="1000" max="500000" step="5000" placeholder="$50,000">
+                        <span class="tip-badge" title="Dollar-cost averaging: Investing a fixed amount regularly reduces timing risk.">💡 Tip</span>
+                    </div>
+                    <div class="stock-picker">
+                        <div class="card-title">Select 5 stocks (diversify to reduce risk):</div>
+                        <div class="stock-grid" id="stockPicker"></div>
+                        <p id="stockCount" style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.9rem;">0 / 5 selected</p>
+                    </div>
+                    <button class="btn btn-primary" id="btnRunSim" disabled>Start Simulation</button>
+                </div>
+
+                <div id="sim2023Play" style="display:none;">
+                    <div class="stats-row">
+                        <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);">Your Portfolio</div><div class="stat-value" id="histPortfolioValue">$0</div></div>
+                        <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);">Your Gain/Loss</div><div class="stat-value" id="histGainValue">$0</div></div>
+                        <div class="stat-card leaderboard-mini"><div style="font-size:0.875rem;color:var(--text-muted);">🏆 Live Ranking</div><div id="histLeaderboard" class="leaderboard-ranks">—</div></div>
+                    </div>
+                    <div class="timeline-controls">
+                        <span id="histCurrentDate" style="font-weight:600;min-width:100px;">Jan 2023</span>
+                        <input type="range" id="histTimeline" min="0" max="100" value="0" class="timeline-slider">
+                        <span id="histEndDate" style="color:var(--text-muted);">Today</span>
+                        <button class="btn btn-secondary" id="btnPlayPause" style="padding:0.4rem 0.8rem;">▶ Play</button>
+                    </div>
+                    <div class="growth-chart-wrap card">
+                        <div class="card-title">📈 Portfolio growth (2023 → now)</div>
+                        <div id="growthChart" class="growth-chart"></div>
+                        <div class="growth-chart-legend">
+                            <span class="chart-legend-item" style="color:var(--primary);">● You</span>
+                            <span class="chart-legend-item" style="color:#FFD700;">● Bull AI</span>
+                            <span class="chart-legend-item" style="color:#22c9c9;">● Hawk AI</span>
+                        </div>
+                    </div>
+                    <div id="marketMoment" class="market-moment"></div>
+                    <div id="achievementsBar" class="achievements-bar"></div>
+                    <div class="sim-result" id="simResult"></div>
+                    <div class="competitive-section">
+                        <div class="card-title">🏆 You vs AI Opponents</div>
+                        <div id="competitiveResults"></div>
+                        <button class="btn btn-secondary" id="btnPlayAgain">Play Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Trading Panel -->
+        <div id="panel-trading" class="game-panel">
+            <div class="page-header">
+                <h1>Live Trading Simulator</h1>
+                <p>Practice trading with real-time crypto and simulated stocks.</p>
+            </div>
+            <div class="trading-tabs">
+                <button class="trading-tab active" data-market="crypto">Cryptocurrency</button>
+                <button class="trading-tab" data-market="stocks">Stocks</button>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);margin-bottom:0.25rem;">Trading Balance</div><div class="stat-value" id="tradingBalance">$10,000.00</div></div>
+                <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);margin-bottom:0.25rem;">Portfolio Value</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
+                <div class="stat-card"><div style="font-size:0.875rem;color:var(--text-muted);margin-bottom:0.25rem;">Total (P&L)</div><div class="stat-value" id="totalValue">$10,000.00</div><div id="pnlDisplay" style="font-size:0.9rem;">+0.00%</div></div>
+            </div>
+            <div class="trading-layout">
+                <div class="card">
+                    <div class="card-title">Market <span id="lastUpdate" style="font-size:0.75rem;font-weight:400;color:var(--text-muted);"></span></div>
+                    <div id="assetList" class="asset-list"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title" id="tradeTitle">Select Asset</div>
+                    <div id="tradePanel" class="trade-panel">
+                        <input type="number" class="trade-input" id="tradeAmount" placeholder="Amount" step="0.0001" min="0">
+                        <div class="trade-buttons">
+                            <button class="btn btn-success" id="btnBuy">Buy</button>
+                            <button class="btn btn-danger" id="btnSell">Sell</button>
+                        </div>
+                        <div id="portfolioHoldings" style="margin-top:1rem;font-size:0.9rem;color:var(--text-secondary);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Quiz Panel -->
+        <div id="panel-quiz" class="game-panel">
+            <div class="page-header">
+                <h1>Financial Literacy Quiz</h1>
+                <p>Answer correctly to earn virtual money.</p>
+            </div>
+            <div class="game-container">
+                <h2 class="game-title">Financial Literacy Challenge</h2>
+                <div class="stat-value" style="font-size:2.5rem;color:white;" id="quizEarnings">$0</div>
+                <p>Correct answers earn rewards</p>
+                <div id="quizQuestion" class="game-question"></div>
+                <button class="btn btn-primary" id="startQuizBtn" style="background:white;color:#667eea;">Start Challenge</button>
+                <div style="margin-top:1.5rem;"><a href="index.html" class="btn btn-secondary" style="text-decoration:none;color:inherit;">Back to SecureBank</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Facts Modal -->
+    <div id="stockFactsModal" class="modal-overlay" style="display:none;">
+        <div class="modal">
+            <button class="modal-close" id="stockFactsClose">&times;</button>
+            <div class="modal-title">📊 Stock Facts — Market Performance</div>
+            <div id="stockFactsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const POPULAR_STOCKS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK-B', 'JPM', 'V', 'JNJ', 'PG', 'UNH', 'HD', 'DIS', 'NFLX', 'AMD', 'INTC', 'CRM', 'ORCL'];
+        const INVEST_PER_STOCK = 1000;
+
+        const LIVE_SIM_KEY = 'liveSimSessionId';
+        const MAX_LIVE_INVEST = 300000;
+
+        let gameState = {
+            tradingBalance: 10000,
+            portfolio: {},
+            crypto: [],
+            stocks: [{ id: 'AAPL', symbol: 'AAPL', name: 'Apple', price: 185, change: 0 }, { id: 'GOOGL', symbol: 'GOOGL', name: 'Alphabet', price: 142, change: 0 }, { id: 'MSFT', symbol: 'MSFT', name: 'Microsoft', price: 415, change: 0 }, { id: 'AMZN', symbol: 'AMZN', name: 'Amazon', price: 178, change: 0 }, { id: 'TSLA', symbol: 'TSLA', name: 'Tesla', price: 245, change: 0 }, { id: 'NVDA', symbol: 'NVDA', name: 'NVIDIA', price: 485, change: 0 }],
+            selectedStocks: [],
+            liveSelectedStocks: [],
+            liveSim: null,  // { sessionId, symbols, allocations, startPrices, startDate, totalInvested }
+            quizIndex: 0,
+            quizEarnings: 0,
+            QUIZ_QUESTIONS: [
+                { q: "What is a good debt-to-income ratio?", opts: ["Below 36%", "50-60%", "70-80%"], correct: 0, reward: 50 },
+                { q: "How much should you save for emergencies?", opts: ["1 month", "3-6 months", "1 year"], correct: 1, reward: 75 },
+                { q: "What is compound interest?", opts: ["Interest paid once", "Interest on interest", "Bank fees"], correct: 1, reward: 100 },
+                { q: "Diversification means?", opts: ["One stock", "Spread across assets", "Only bonds"], correct: 1, reward: 100 }
+            ]
+        };
+
+        // ============ 2023 INTERACTIVE HISTORICAL SIMULATOR ============
+        const MARKET_MOMENTS = [
+            { month: '2023-01', title: '📚 Buy and Hold', tip: 'Long-term investors typically hold through ups and downs. Historically, the stock market has trended upward over decades.' },
+            { month: '2023-03', title: '⚠️ Banking Stress', tip: 'In March 2023, several banks faced stress. Diversification across sectors helps protect your portfolio from single-industry shocks.' },
+            { month: '2023-06', title: '📈 Tech Rally', tip: 'Tech stocks often lead market recoveries. But putting all your eggs in one basket increases risk—diversify!' },
+            { month: '2023-10', title: '🔄 Market Volatility', tip: 'Volatility is normal. Staying invested during downturns has historically rewarded patient investors.' },
+            { month: '2024-01', title: '🎯 Setting Goals', tip: 'Define your investing goals: retirement, a home, education. Time horizon affects how much risk you can take.' },
+            { month: '2024-06', title: '📊 AI Boom', tip: 'Sectors like AI can surge—and correct. Avoid chasing hype; stick to your strategy.' },
+            { month: '2024-10', title: '💎 Compound Growth', tip: 'Reinvested gains grow on themselves. Even modest returns compound into significant wealth over time.' }
+        ];
+        const ACHIEVEMENTS = [
+            { id: 'diversified', name: 'Diversified', desc: 'Picked 5 different stocks', check: (s) => s?.length >= 5 },
+            { id: 'holder', name: 'Diamond Hands', desc: 'Held through the simulation', check: () => true },
+            { id: 'beatspy', name: 'Beat the Market', desc: 'Outperformed S&P 500', check: (_, g) => g?.beatSpy },
+            { id: 'beatai', name: 'Champion', desc: 'Beat both AI opponents', check: (_, g) => g?.rank === 1 },
+            { id: 'gain10', name: '10% Club', desc: 'Portfolio up 10%+', check: (_, g) => g?.gainPct >= 10 },
+            { id: 'gain25', name: '25% Club', desc: 'Portfolio up 25%+', check: (_, g) => g?.gainPct >= 25 }
+        ];
+
+        let histSim = null;  // { stocks, pricesByDate, spyPrices, shares, totalInvested, timelineMonths, spyStart }
+        let histPlayInterval = null;
+
+        function renderStockPicker() {
+            const grid = document.getElementById('stockPicker');
+            if (!grid) return;
+            grid.innerHTML = POPULAR_STOCKS.map(sym => `
+                <div class="stock-chip" data-sym="${sym}">${sym}</div>
+            `).join('');
+            grid.querySelectorAll('.stock-chip').forEach(chip => {
+                chip.onclick = () => {
+                    const sym = chip.dataset.sym;
+                    const idx = gameState.selectedStocks.indexOf(sym);
+                    if (idx >= 0) {
+                        gameState.selectedStocks.splice(idx, 1);
+                        chip.classList.remove('selected');
+                    } else if (gameState.selectedStocks.length < 5) {
+                        gameState.selectedStocks.push(sym);
+                        chip.classList.add('selected');
+                    }
+                    document.getElementById('stockCount').textContent = `${gameState.selectedStocks.length} / 5 selected`;
+                    document.getElementById('btnRunSim').disabled = gameState.selectedStocks.length !== 5;
+                };
+            });
+        }
+
+        function priceAtDate(prices, dateStr) {
+            if (!prices?.length) return null;
+            const d = dateStr.slice(0, 7);
+            for (let i = prices.length - 1; i >= 0; i--) {
+                if (prices[i].date && prices[i].date.slice(0, 7) <= d) return prices[i].price;
+            }
+            return prices[0]?.price;
+        }
+
+        function pickAIStocks(allRanked, exclude = [], countHistorical = 3, countRandom = 2) {
+            const pool = allRanked.filter(r => !r.error && r.changePct != null && !exclude.includes(r.symbol));
+            const byReturn = [...pool].sort((a, b) => (b.changePct || -999) - (a.changePct || -999));
+            const historical = byReturn.slice(0, countHistorical).map(r => r.symbol);
+            const remaining = pool.filter(r => !historical.includes(r.symbol)).map(r => r.symbol);
+            const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+            const random = shuffled.slice(0, countRandom);
+            return { symbols: [...historical, ...random], historical };
+        }
+
+        function pickAI2WithOverlap(allRanked, ai1Symbols, ai1Historical, countHistorical, countRandom) {
+            const overlapCount = Math.min(countHistorical, ai1Historical.length, 1 + Math.floor(Math.random() * 2));
+            const overlapPicks = [...ai1Historical].sort(() => Math.random() - 0.5).slice(0, overlapCount);
+            const pool = allRanked.filter(r => !r.error && r.changePct != null && !ai1Symbols.includes(r.symbol));
+            const byReturn = [...pool].sort((a, b) => (b.changePct || -999) - (a.changePct || -999));
+            const restHistorical = byReturn.slice(0, countHistorical - overlapCount).map(r => r.symbol);
+            const taken = [...overlapPicks, ...restHistorical];
+            const remaining = pool.filter(r => !taken.includes(r.symbol)).map(r => r.symbol);
+            const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+            const random = shuffled.slice(0, countRandom);
+            return [...overlapPicks, ...restHistorical, ...random];
+        }
+
+        async function run2023Simulation() {
+            const amount = Math.max(1000, parseFloat(document.getElementById('simInvestAmount').value) || 50000);
+            const investPerStock = amount / 5;
+            const userSymbols = [...gameState.selectedStocks];
+            document.getElementById('btnRunSim').disabled = true;
+            document.getElementById('simResult').innerHTML = '<div class="sim-loading">Loading historical data for you and AI opponents...</div>';
+
+            const batchRes = await fetch(`/api/stock-history-batch?symbols=${POPULAR_STOCKS.join(',')}`);
+            if (!batchRes.ok) {
+                document.getElementById('simResult').innerHTML = '<div class="sim-error">Failed to load market data.</div>';
+                document.getElementById('btnRunSim').disabled = false;
+                return;
+            }
+            const batch = await batchRes.json();
+            const stockData = {};
+            for (const item of batch) {
+                if (item.error || !item.prices?.length) continue;
+                stockData[item.symbol] = { symbol: item.symbol, prices: item.prices, changePct: item.changePct, firstPrice: item.firstPrice, lastPrice: item.lastPrice };
+            }
+            const userHasData = userSymbols.every(s => stockData[s]);
+            if (!userHasData) {
+                document.getElementById('simResult').innerHTML = '<div class="sim-error">Could not load data for your selected stocks. Try different picks.</div>';
+                document.getElementById('btnRunSim').disabled = false;
+                return;
+            }
+
+            const allRanked = batch.filter(b => !b.error && b.changePct != null);
+            const hist1 = Math.random() < 0.5 ? 3 : 2;
+            const rand1 = 5 - hist1;
+            const hist2 = Math.random() < 0.5 ? 3 : 2;
+            const rand2 = 5 - hist2;
+            const ai1Result = pickAIStocks(allRanked, [], hist1, rand1);
+            const ai1Symbols = ai1Result.symbols;
+            const ai1Historical = ai1Result.historical;
+            const ai2Symbols = pickAI2WithOverlap(allRanked, ai1Symbols, ai1Historical, hist2, rand2);
+
+            const months = [];
+            const startY = 2023, startM = 1;
+            const now = new Date();
+            for (let y = startY; y <= now.getFullYear(); y++) {
+                const endM = (y === now.getFullYear()) ? now.getMonth() + 1 : 12;
+                for (let m = (y === startY ? startM : 1); m <= endM; m++) {
+                    months.push(`${y}-${String(m).padStart(2,'0')}`);
+                }
+            }
+
+            function buildPortfolio(symbols, totalInv) {
+                const perStock = totalInv / 5;
+                const shares = {};
+                let total = 0;
+                for (const sym of symbols) {
+                    const p0 = stockData[sym]?.prices[0]?.price;
+                    if (!p0) continue;
+                    shares[sym] = perStock / p0;
+                    total += perStock;
+                }
+                const byDate = {};
+                for (const mon of months) {
+                    let val = 0;
+                    for (const sym of symbols) {
+                        const p = priceAtDate(stockData[sym]?.prices, mon + '-15');
+                        if (p != null) val += (shares[sym] || 0) * p;
+                    }
+                    byDate[mon] = val;
+                }
+                return { symbols, shares, pricesByDate: byDate, totalInvested: total };
+            }
+
+            const user = buildPortfolio(userSymbols, amount);
+            const ai1 = buildPortfolio(ai1Symbols, amount);
+            const ai2 = buildPortfolio(ai2Symbols, amount);
+
+            histSim = {
+                symbols: userSymbols,
+                stockData,
+                pricesByDate: user.pricesByDate,
+                shares: user.shares,
+                totalInvested: user.totalInvested,
+                timelineMonths: months,
+                ai1: { name: 'Bull AI', symbols: ai1Symbols, ...ai1 },
+                ai2: { name: 'Hawk AI', symbols: ai2Symbols, ...ai2 },
+                spyPrices: null,
+                spyStart: null
+            };
+            try {
+                const spyR = await fetch('/api/stock-history?symbol=SPY');
+                const spyData = await spyR.json();
+                if (spyR.ok && spyData?.prices?.length) {
+                    const spyStart = priceAtDate(spyData.prices, '2023-01') || spyData.prices[0]?.price || 1;
+                    histSim.spyPrices = {};
+                    for (const mon of months) {
+                        const p = priceAtDate(spyData.prices, mon + '-15');
+                        if (p != null) histSim.spyPrices[mon] = (p / spyStart) * amount;
+                    }
+                    histSim.spyStart = spyStart;
+                }
+            } catch (e) { /* optional */ }
+
+            document.getElementById('sim2023Setup').style.display = 'none';
+            document.getElementById('sim2023Play').style.display = 'block';
+            document.getElementById('histTimeline').max = months.length - 1;
+            document.getElementById('histTimeline').value = 0;
+            document.getElementById('btnRunSim').disabled = false;
+            renderGrowthChart();
+            updateHistFrame(0);
+            document.getElementById('competitiveResults').innerHTML = '';
+        }
+
+        function renderGrowthChart() {
+            const container = document.getElementById('growthChart');
+            if (!container || !histSim) return;
+            const months = histSim.timelineMonths;
+            const userVals = months.map(m => histSim.pricesByDate[m] ?? histSim.totalInvested);
+            const ai1Vals = months.map(m => histSim.ai1?.pricesByDate?.[m] ?? histSim.ai1?.totalInvested ?? 0);
+            const ai2Vals = months.map(m => histSim.ai2?.pricesByDate?.[m] ?? histSim.ai2?.totalInvested ?? 0);
+            const allVals = [...userVals, ...ai1Vals, ...ai2Vals].filter(Boolean);
+            const minV = Math.min(...allVals, histSim.totalInvested);
+            const maxV = Math.max(...allVals, histSim.totalInvested);
+            const padding = { top: 12, right: 12, bottom: 28, left: 52 };
+            const w = 600;
+            const h = 260;
+            const chartW = w - padding.left - padding.right;
+            const chartH = h - padding.top - padding.bottom;
+            const scaleX = (i) => padding.left + (i / Math.max(1, months.length - 1)) * chartW;
+            const scaleY = (v) => padding.top + chartH - ((v - minV) / Math.max(1, maxV - minV)) * chartH;
+
+            function toPath(vals) {
+                return vals.map((v, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(i)} ${scaleY(v)}`).join(' ');
+            }
+
+            const yTicks = 5;
+            let yAxisLabels = '';
+            for (let i = 0; i <= yTicks; i++) {
+                const v = minV + (maxV - minV) * (i / yTicks);
+                const y = scaleY(v);
+                yAxisLabels += `<text x="${padding.left - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="var(--text-muted)">$${(v/1000).toFixed(0)}k</text>`;
+            }
+            const xAxisLabels = [];
+            const step = Math.max(1, Math.floor(months.length / 6));
+            for (let i = 0; i < months.length; i += step) {
+                const [y, m] = months[i].split('-');
+                const monthNames = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+                xAxisLabels.push(`<text x="${scaleX(i)}" y="${h - 6}" text-anchor="middle" font-size="10" fill="var(--text-muted)">${monthNames[parseInt(m,10)-1]} ${y.slice(2)}</text>`);
+            }
+
+            container.innerHTML = `
+                <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <linearGradient id="gradUser" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--primary)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></linearGradient>
+                        <linearGradient id="gradAi1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFD700" stop-opacity="0.2"/><stop offset="100%" stop-color="#FFD700" stop-opacity="0"/></linearGradient>
+                        <linearGradient id="gradAi2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c9c9" stop-opacity="0.2"/><stop offset="100%" stop-color="#22c9c9" stop-opacity="0"/></linearGradient>
+                    </defs>
+                    ${yAxisLabels}
+                    ${xAxisLabels.join('')}
+                    <path d="${toPath(userVals)} L ${scaleX(months.length-1)} ${scaleY(userVals[userVals.length-1])} L ${scaleX(0)} ${scaleY(userVals[0])} Z" fill="url(#gradUser)"/>
+                    <path d="${toPath(ai1Vals)} L ${scaleX(months.length-1)} ${scaleY(ai1Vals[ai1Vals.length-1])} L ${scaleX(0)} ${scaleY(ai1Vals[0])} Z" fill="url(#gradAi1)"/>
+                    <path d="${toPath(ai2Vals)} L ${scaleX(months.length-1)} ${scaleY(ai2Vals[ai2Vals.length-1])} L ${scaleX(0)} ${scaleY(ai2Vals[0])} Z" fill="url(#gradAi2)"/>
+                    <path d="${toPath(userVals)}" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="${toPath(ai1Vals)}" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="${toPath(ai2Vals)}" fill="none" stroke="#22c9c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line id="chartScrubber" x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${padding.top + chartH}" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="4 2" opacity="0.8"/>
+                </svg>
+            `;
+        }
+
+        function updateGrowthChartScrubber(idx) {
+            const line = document.getElementById('chartScrubber');
+            if (!line || !histSim) return;
+            const months = histSim.timelineMonths;
+            const padding = { left: 52, right: 12, top: 12, bottom: 28 };
+            const w = 600;
+            const chartW = w - padding.left - padding.right;
+            const chartH = 260 - padding.top - padding.bottom;
+            const x = padding.left + (idx / Math.max(1, months.length - 1)) * chartW;
+            line.setAttribute('x1', x);
+            line.setAttribute('x2', x);
+            line.setAttribute('y1', padding.top);
+            line.setAttribute('y2', padding.top + chartH);
+        }
+
+        function updateHistFrame(idx) {
+            if (!histSim) return;
+            const months = histSim.timelineMonths;
+            const mon = months[Math.min(idx, months.length - 1)];
+            const val = histSim.pricesByDate[mon] ?? histSim.totalInvested;
+            const gain = val - histSim.totalInvested;
+            const gainPct = histSim.totalInvested ? (gain / histSim.totalInvested) * 100 : 0;
+            const spyVal = histSim.spyPrices?.[mon];
+            const beatSpy = spyVal != null && val > spyVal;
+
+            const ai1Val = histSim.ai1?.pricesByDate?.[mon] ?? histSim.ai1?.totalInvested ?? 0;
+            const ai2Val = histSim.ai2?.pricesByDate?.[mon] ?? histSim.ai2?.totalInvested ?? 0;
+            const ranked = [
+                { name: 'You', val, id: 'user' },
+                { name: histSim.ai1?.name || 'Bull AI', val: ai1Val, id: 'ai1' },
+                { name: histSim.ai2?.name || 'Hawk AI', val: ai2Val, id: 'ai2' }
+            ].sort((a, b) => (b.val || 0) - (a.val || 0));
+
+            updateGrowthChartScrubber(idx);
+
+            const [y, m] = mon.split('-');
+            const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            document.getElementById('histCurrentDate').textContent = `${monthNames[parseInt(m,10)-1]} ${y}`;
+            document.getElementById('histPortfolioValue').textContent = '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const gEl = document.getElementById('histGainValue');
+            gEl.textContent = (gain >= 0 ? '+' : '') + '$' + gain.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' (' + gainPct.toFixed(1) + '%)';
+            gEl.className = 'stat-value ' + (gain >= 0 ? 'positive' : 'negative');
+            const lbEl = document.getElementById('histLeaderboard');
+            lbEl.innerHTML = ranked.map((r, i) => `<div class="rank-item rank-${i+1}">${i+1}. ${r.name}: $${(r.val||0).toLocaleString('en-US',{maximumFractionDigits:0})}</div>`).join('');
+
+            const moment = [...MARKET_MOMENTS].filter(m => m.month <= mon).pop();
+            const mm = document.getElementById('marketMoment');
+            if (moment) mm.innerHTML = `<strong>${moment.title}</strong> — ${moment.tip}`;
+            else mm.innerHTML = '';
+
+            const userRank = (ranked.findIndex(r => r.id === 'user') + 1) || null;
+            const achieved = ACHIEVEMENTS.filter(a => a.check(histSim.symbols, { gainPct, beatSpy, rank: userRank }));
+            document.getElementById('achievementsBar').innerHTML = achieved.map(a =>
+                `<span class="achievement-badge earned">${a.name}</span>`
+            ).join('');
+
+            const rows = histSim.symbols.map(sym => {
+                const p = priceAtDate(histSim.stockData[sym].prices, mon + '-15');
+                const startP = histSim.stockData[sym].prices[0]?.price;
+                const sh = histSim.shares[sym] || 0;
+                const v = sh * (p || 0);
+                const ch = startP ? ((p - startP) / startP) * 100 : 0;
+                return { sym, price: p, value: v, changePct: ch };
+            });
+            document.getElementById('simResult').innerHTML = `
+                <h3>Portfolio at ${monthNames[parseInt(m,10)-1]} ${y}</h3>
+                ${rows.map(r => `
+                    <div class="sim-result-row">
+                        <span>${r.sym}: $${(r.price||0).toFixed(2)}</span>
+                        <span class="sim-result-value ${r.changePct >= 0 ? 'positive' : 'negative'}">${(r.changePct >= 0 ? '+' : '')}${(r.changePct||0).toFixed(1)}%</span>
+                    </div>
+                `).join('')}
+            `;
+
+            if (idx >= months.length - 1) {
+                if (histPlayInterval) { clearInterval(histPlayInterval); histPlayInterval = null; }
+                document.getElementById('btnPlayPause').textContent = '▶ Play';
+                const ai1Gain = histSim.ai1 ? ((histSim.ai1.pricesByDate[mon] - histSim.ai1.totalInvested) / histSim.ai1.totalInvested * 100) : 0;
+                const ai2Gain = histSim.ai2 ? ((histSim.ai2.pricesByDate[mon] - histSim.ai2.totalInvested) / histSim.ai2.totalInvested * 100) : 0;
+                const finalRank = ranked.map((r, i) => ({
+                    ...r,
+                    rank: i + 1,
+                    gainPct: r.id === 'user' ? gainPct : r.id === 'ai1' ? ai1Gain : ai2Gain
+                }));
+                const youRank = finalRank.find(r => r.id === 'user').rank;
+                document.getElementById('competitiveResults').innerHTML = `
+                    <h4 style="margin-bottom:0.75rem;">Final Rankings</h4>
+                    ${finalRank.map(r => `
+                        <div class="sim-result-row ${r.id === 'user' ? 'sim-result-total' : ''}">
+                            <span>${r.rank}. ${r.name}${r.id === 'user' ? ' (You)' : ''} — ${r.id === 'user' ? histSim.symbols.join(', ') : r.id === 'ai1' ? histSim.ai1.symbols.join(', ') : histSim.ai2.symbols.join(', ')}</span>
+                            <span class="sim-result-value ${r.gainPct >= 0 ? 'positive' : 'negative'}">${(r.gainPct >= 0 ? '+' : '')}${r.gainPct.toFixed(1)}%</span>
+                        </div>
+                    `).join('')}
+                    <p style="margin-top:0.75rem;font-weight:600;color:var(--primary);">${youRank === 1 ? '🏆 You won! You beat both AI opponents!' : youRank === 2 ? '🥈 You came in 2nd!' : '🥉 You came in 3rd. Try again!'}</p>
+                    ${spyVal != null ? `<p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">vs S&P 500: ${beatSpy ? 'You beat the market!' : 'Market performed better.'}</p>` : ''}
+                    <p style="margin-top:1rem;color:var(--text-secondary);font-size:0.85rem;">AI picks: 3 stocks by historical return + 2 random. Risk-free simulation with real data.</p>
+                `;
+            }
+        }
+
+        document.getElementById('histTimeline')?.addEventListener('input', (e) => {
+            updateHistFrame(parseInt(e.target.value, 10));
+        });
+        document.getElementById('btnPlayPause')?.addEventListener('click', () => {
+            if (!histSim) return;
+            if (histPlayInterval) {
+                clearInterval(histPlayInterval);
+                histPlayInterval = null;
+                document.getElementById('btnPlayPause').textContent = '▶ Play';
+                return;
+            }
+            document.getElementById('btnPlayPause').textContent = '⏸ Pause';
+            let idx = parseInt(document.getElementById('histTimeline').value, 10);
+            histPlayInterval = setInterval(() => {
+                idx = Math.min(idx + 1, histSim.timelineMonths.length - 1);
+                document.getElementById('histTimeline').value = idx;
+                updateHistFrame(idx);
+                if (idx >= histSim.timelineMonths.length - 1) {
+                    clearInterval(histPlayInterval);
+                    histPlayInterval = null;
+                    document.getElementById('btnPlayPause').textContent = '▶ Play';
+                }
+            }, 600);
+        });
+        document.getElementById('btnPlayAgain')?.addEventListener('click', () => {
+            histSim = null;
+            if (histPlayInterval) { clearInterval(histPlayInterval); histPlayInterval = null; }
+            document.getElementById('sim2023Play').style.display = 'none';
+            document.getElementById('sim2023Setup').style.display = 'block';
+            document.getElementById('competitiveResults').innerHTML = '';
+        });
+
+        // ============ OPTION 2: LIVE SIMULATOR ============
+        function showSimOption(option) {
+            document.querySelectorAll('.sim-option').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.sim-option[data-option="${option}"]`).classList.add('active');
+            document.getElementById('sim-2023').style.display = option === '2023' ? 'block' : 'none';
+            document.getElementById('sim-live').style.display = option === 'live' ? 'block' : 'none';
+            if (option === 'live') {
+                renderLiveStockPicker();
+                if (gameState.liveSim) refreshLiveReport();
+            }
+        }
+
+        function renderLiveStockPicker() {
+            const grid = document.getElementById('liveStockPicker');
+            if (!grid) return;
+            grid.innerHTML = POPULAR_STOCKS.map(sym => `
+                <div class="stock-chip" data-sym="${sym}">${sym}</div>
+            `).join('');
+            grid.querySelectorAll('.stock-chip').forEach(chip => {
+                chip.classList.toggle('selected', gameState.liveSelectedStocks.includes(chip.dataset.sym));
+                chip.onclick = () => {
+                    const sym = chip.dataset.sym;
+                    const idx = gameState.liveSelectedStocks.indexOf(sym);
+                    if (idx >= 0) {
+                        gameState.liveSelectedStocks.splice(idx, 1);
+                        chip.classList.remove('selected');
+                    } else if (gameState.liveSelectedStocks.length < 5) {
+                        gameState.liveSelectedStocks.push(sym);
+                        chip.classList.add('selected');
+                    }
+                    document.getElementById('liveStockCount').textContent = `${gameState.liveSelectedStocks.length} / 5 selected`;
+                    document.getElementById('btnStartLive').disabled = gameState.liveSelectedStocks.length !== 5;
+                };
+            });
+            document.getElementById('liveStockCount').textContent = `${gameState.liveSelectedStocks.length} / 5 selected`;
+            document.getElementById('btnStartLive').disabled = gameState.liveSelectedStocks.length !== 5;
+        }
+
+        async function startLiveSimulation() {
+            const total = Math.min(MAX_LIVE_INVEST, Math.max(1, parseFloat(document.getElementById('liveInvestTotal').value) || 100000));
+            const symbols = [...gameState.liveSelectedStocks];
+            document.getElementById('btnStartLive').disabled = true;
+            document.getElementById('btnStartLive').textContent = 'Fetching prices...';
+
+            try {
+                const r = await fetch(`/api/stock-quotes?symbols=${symbols.join(',')}`);
+                const quotes = await r.json();
+                const startPrices = {};
+                const perStock = total / 5;
+                const allocations = {};
+                let allOk = true;
+                for (const q of quotes) {
+                    if (q.price == null) { allOk = false; break; }
+                    startPrices[q.symbol] = q.price;
+                    allocations[q.symbol] = perStock;
+                }
+                if (!allOk) throw new Error('Could not fetch prices for all stocks.');
+
+                const sessionId = 'ls_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+                const startDate = new Date().toISOString().slice(0, 10);
+
+                const saveRes = await fetch('/api/live-sim/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId, symbols, allocations, startPrices, startDate, totalInvested: total })
+                });
+                if (!saveRes.ok) throw new Error('Failed to save session');
+
+                localStorage.setItem(LIVE_SIM_KEY, sessionId);
+                gameState.liveSim = { sessionId, symbols, allocations, startPrices, startDate, totalInvested: total };
+                document.getElementById('liveSimActive').style.display = 'block';
+                refreshLiveReport();
+            } catch (e) {
+                alert(e.message || 'Failed to start simulation');
+            }
+            document.getElementById('btnStartLive').disabled = false;
+            document.getElementById('btnStartLive').textContent = 'Start Live Simulation';
+        }
+
+        let liveReportInterval = null;
+        async function refreshLiveReport() {
+            const sim = gameState.liveSim;
+            if (!sim || !sim.symbols?.length) return;
+
+            const r = await fetch(`/api/stock-quotes?symbols=${sim.symbols.join(',')}`);
+            const quotes = await r.json();
+
+            let currentValue = 0;
+            const rows = [];
+            for (const q of quotes) {
+                const price = q.price;
+                const startPrice = sim.startPrices?.[q.symbol];
+                const alloc = sim.allocations?.[q.symbol] || 0;
+                if (price != null && startPrice && alloc) {
+                    const shares = alloc / startPrice;
+                    const value = shares * price;
+                    currentValue += value;
+                    const changePct = ((price - startPrice) / startPrice) * 100;
+                    rows.push({ symbol: q.symbol, alloc, startPrice, price, value, changePct });
+                }
+            }
+            const totalInvested = sim.totalInvested || 0;
+            const gain = currentValue - totalInvested;
+            const gainPct = totalInvested ? (gain / totalInvested) * 100 : 0;
+
+            document.getElementById('liveInvested').textContent = '$' + totalInvested.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('liveValue').textContent = '$' + currentValue.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            const gainEl = document.getElementById('liveGain');
+            gainEl.textContent = (gain >= 0 ? '+' : '') + '$' + gain.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' (' + gainPct.toFixed(2) + '%)';
+            gainEl.className = 'stat-value ' + (gain >= 0 ? 'positive' : 'negative');
+
+            const reportEl = document.getElementById('dailyReport');
+            reportEl.innerHTML = `
+                <p style="margin-bottom:0.75rem;color:var(--text-secondary);font-size:0.9rem;">Updated ${new Date().toLocaleTimeString()}</p>
+                ${rows.map(rr => `
+                    <div class="sim-result-row">
+                        <span>${rr.symbol}: $${rr.startPrice?.toFixed(2)} → $${rr.price?.toFixed(2)}</span>
+                        <span class="sim-result-value ${rr.changePct >= 0 ? 'positive' : 'negative'}">${rr.changePct >= 0 ? '+' : ''}${rr.changePct.toFixed(2)}%</span>
+                    </div>
+                `).join('')}
+            `;
+            if (!liveReportInterval) liveReportInterval = setInterval(refreshLiveReport, 60000);
+        }
+
+        async function showStockFacts() {
+            const sim = gameState.liveSim;
+            if (!sim || !sim.symbols?.length) { alert('Start a live simulation first.'); return; }
+
+            const content = document.getElementById('stockFactsContent');
+            content.innerHTML = '<p style="color:var(--text-muted);">Loading facts...</p>';
+            document.getElementById('stockFactsModal').style.display = 'flex';
+
+            try {
+                const r = await fetch(`/api/stock-facts?symbols=${sim.symbols.join(',')}`);
+                const data = await r.json();
+                const s = data.summary || {};
+                content.innerHTML = `
+                    <p style="margin-bottom:1rem;font-size:0.9rem;color:var(--text-muted);">Data source: ${data.dataSource || 'API'}</p>
+                    <div style="margin-bottom:1rem;">
+                        ${s.topGainer ? `<p><strong>Top gainer:</strong> <span class="sim-result-value positive">${s.topGainer}</span></p>` : ''}
+                        ${s.topLoser ? `<p><strong>Top loser:</strong> <span class="sim-result-value negative">${s.topLoser}</span></p>` : ''}
+                        ${s.avgChange ? `<p><strong>Avg change:</strong> ${s.avgChange}</p>` : ''}
+                    </div>
+                    <div style="margin-top:1rem;">
+                        ${(data.facts || []).map(f => `<p style="margin-bottom:0.5rem;font-size:0.95rem;">${f.fact || f.symbol + ': No data'}</p>`).join('')}
+                    </div>
+                `;
+            } catch (e) {
+                content.innerHTML = '<p class="sim-error">Failed to load stock facts.</p>';
+            }
+        }
+
+        document.getElementById('stockFactsClose').onclick = () => { document.getElementById('stockFactsModal').style.display = 'none'; };
+        document.getElementById('stockFactsModal').onclick = (e) => { if (e.target === document.getElementById('stockFactsModal')) document.getElementById('stockFactsModal').style.display = 'none'; };
+
+        async function loadLiveSimSession() {
+            const sid = localStorage.getItem(LIVE_SIM_KEY);
+            if (!sid) return;
+            try {
+                const r = await fetch(`/api/live-sim/${encodeURIComponent(sid)}`);
+                if (!r.ok) return;
+                const data = await r.json();
+                gameState.liveSim = {
+                    sessionId: data.sessionId,
+                    symbols: data.symbols || [],
+                    allocations: data.allocations || {},
+                    startPrices: data.startPrices || {},
+                    startDate: data.startDate,
+                    totalInvested: data.totalInvested || 0
+                };
+                gameState.liveSelectedStocks = [...(data.symbols || [])];
+                document.getElementById('liveInvestTotal').value = Math.min(MAX_LIVE_INVEST, data.totalInvested || 100000);
+                document.getElementById('liveSimActive').style.display = 'block';
+                refreshLiveReport();
+            } catch (e) { /* ignore */ }
+        }
+
+        // ============ LIVE TRADING ============
+        let currentMarket = 'crypto';
+        let selectedAsset = null;
+
+        async function fetchCrypto() {
+            try {
+                const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,cardano,dogecoin,ripple&order=market_cap_desc&sparkline=false&price_change_percentage=24h');
+                const data = await r.json();
+                const map = { bitcoin:'btc', ethereum:'eth', solana:'sol', cardano:'ada', dogecoin:'doge', ripple:'xrp' };
+                gameState.crypto = data.map(c => ({
+                    id: map[c.id] || c.id,
+                    symbol: c.symbol.toUpperCase(),
+                    name: c.name,
+                    price: c.current_price,
+                    change: c.price_change_percentage_24h || 0,
+                    owned: gameState.portfolio[c.symbol?.toLowerCase()] || 0
+                }));
+                document.getElementById('lastUpdate').textContent = 'Updated ' + new Date().toLocaleTimeString();
+            } catch (e) {
+                gameState.crypto = [
+                    { id:'btc', symbol:'BTC', name:'Bitcoin', price:95000, change:2.5 },
+                    { id:'eth', symbol:'ETH', name:'Ethereum', price:3500, change:-1.2 },
+                    { id:'sol', symbol:'SOL', name:'Solana', price:180, change:5.8 }
+                ];
+            }
+        }
+
+        function simStockPrices() {
+            gameState.stocks.forEach(s => {
+                s.change = (Math.random() - 0.48) * 4;
+                s.price = Math.max(1, s.price * (1 + s.change / 100));
+            });
+        }
+
+        function renderAssets() {
+            const list = currentMarket === 'crypto' ? gameState.crypto : gameState.stocks;
+            if (!list?.length) return;
+            document.getElementById('assetList').innerHTML = list.map(a => {
+                const owned = gameState.portfolio[a.id] || 0;
+                return `<div class="asset-row ${selectedAsset?.id === a.id ? 'selected' : ''}" data-id="${a.id}">
+                    <div><div class="asset-symbol">${a.symbol || a.id}</div><div style="font-size:0.85rem;color:var(--text-muted);">${a.name}</div></div>
+                    <div><div>$${(a.price||0).toLocaleString(undefined,{minimumFractionDigits:2})}</div>
+                    <span class="asset-change ${(a.change||0)>=0?'up':'down'}">${(a.change>=0?'+':'')+(a.change||0).toFixed(2)}%</span></div>
+                    ${owned > 0 ? `<div style="font-size:0.8rem;">Own: ${owned}</div>` : ''}
+                </div>`;
+            }).join('');
+            document.querySelectorAll('.asset-row').forEach(row => {
+                row.onclick = () => {
+                    selectedAsset = list.find(x => x.id === row.dataset.id);
+                    renderAssets();
+                    renderTradePanel();
+                };
+            });
+        }
+
+        function renderTradePanel() {
+            const title = document.getElementById('tradeTitle');
+            const holdings = document.getElementById('portfolioHoldings');
+            if (!selectedAsset) {
+                title.textContent = 'Select an asset';
+                holdings.textContent = '';
+                return;
+            }
+            title.textContent = `Trade ${selectedAsset.symbol || selectedAsset.id}`;
+            const owned = gameState.portfolio[selectedAsset.id] || 0;
+            holdings.textContent = owned > 0 ? `You own: ${owned} (≈ $${(owned * selectedAsset.price).toFixed(2)})` : "You don't own any.";
+        }
+
+        function doTrade(isBuy) {
+            if (!selectedAsset) return false;
+            const amt = parseFloat(document.getElementById('tradeAmount').value) || 0;
+            if (amt <= 0) return false;
+            const price = selectedAsset.price;
+            const cost = amt * price;
+            const owned = gameState.portfolio[selectedAsset.id] || 0;
+            if (isBuy) {
+                if (cost > gameState.tradingBalance) { alert('Insufficient balance'); return false; }
+                gameState.tradingBalance -= cost;
+                gameState.portfolio[selectedAsset.id] = owned + amt;
+            } else {
+                if (amt > owned) { alert("You don't own that much"); return false; }
+                gameState.tradingBalance += cost;
+                gameState.portfolio[selectedAsset.id] = owned - amt;
+            }
+            document.getElementById('tradeAmount').value = '';
+            updateTradingUI();
+            renderAssets();
+            renderTradePanel();
+            return true;
+        }
+
+        function updateTradingUI() {
+            let portVal = 0;
+            const assets = currentMarket === 'crypto' ? gameState.crypto : gameState.stocks;
+            assets.forEach(a => { portVal += (gameState.portfolio[a.id] || 0) * (a.price || 0); });
+            const total = gameState.tradingBalance + portVal;
+            const pnl = ((total - 10000) / 10000 * 100).toFixed(2);
+            document.getElementById('tradingBalance').textContent = '$' + gameState.tradingBalance.toLocaleString('en-US', {minimumFractionDigits:2});
+            document.getElementById('portfolioValue').textContent = '$' + portVal.toLocaleString('en-US', {minimumFractionDigits:2});
+            document.getElementById('totalValue').textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits:2});
+            const pnlEl = document.getElementById('pnlDisplay');
+            pnlEl.textContent = (parseFloat(pnl) >= 0 ? '+' : '') + pnl + '%';
+            pnlEl.className = parseFloat(pnl) >= 0 ? 'positive' : 'negative';
+        }
+
+        // ============ QUIZ ============
+        function loadQuiz() {
+            const qs = gameState.QUIZ_QUESTIONS;
+            if (gameState.quizIndex >= qs.length) {
+                document.getElementById('quizQuestion').innerHTML = `<h3>🎉 Complete!</h3><p>You earned $${gameState.quizEarnings}</p>`;
+                document.getElementById('startQuizBtn').textContent = 'Play Again';
+                document.getElementById('startQuizBtn').style.display = 'block';
+                document.getElementById('startQuizBtn').onclick = () => { gameState.quizIndex = 0; gameState.quizEarnings = 0; loadQuiz(); };
+                return;
+            }
+            const q = qs[gameState.quizIndex];
+            document.getElementById('startQuizBtn').style.display = 'none';
+            document.getElementById('quizEarnings').textContent = '$' + gameState.quizEarnings;
+            document.getElementById('quizQuestion').innerHTML = `<h3>${q.q}</h3><div class="game-options">${q.opts.map((o,i) => `<div class="game-option" data-i="${i}">${o}</div>`).join('')}</div>`;
+            document.querySelectorAll('.game-option').forEach(opt => {
+                opt.onclick = () => {
+                    document.querySelectorAll('.game-option').forEach((o, idx) => {
+                        if (idx === q.correct) o.classList.add('correct');
+                        else if (idx === +opt.dataset.i) o.classList.add('incorrect');
+                        o.style.pointerEvents = 'none';
+                    });
+                    if (+opt.dataset.i === q.correct) gameState.quizEarnings += q.reward;
+                    document.getElementById('quizEarnings').textContent = '$' + gameState.quizEarnings;
+                    setTimeout(() => { gameState.quizIndex++; loadQuiz(); }, 1500);
+                };
+            });
+        }
+
+        // ============ PANELS ============
+        function showPanel(name) {
+            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.panel === name));
+            if (name === 'trading') {
+                if (currentMarket === 'crypto') fetchCrypto().then(renderAssets);
+                else { simStockPrices(); renderAssets(); }
+                updateTradingUI();
+            }
+        }
+
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.onclick = () => { if (!tab.classList.contains('disabled')) showPanel(tab.dataset.panel); };
+        });
+
+        document.querySelectorAll('.trading-tab').forEach(t => {
+            t.onclick = () => {
+                document.querySelectorAll('.trading-tab').forEach(x => x.classList.remove('active'));
+                t.classList.add('active');
+                currentMarket = t.dataset.market;
+                selectedAsset = null;
+                if (currentMarket === 'crypto') fetchCrypto().then(renderAssets);
+                else { simStockPrices(); renderAssets(); }
+                renderTradePanel();
+                updateTradingUI();
+            };
+        });
+
+        document.getElementById('btnRunSim').onclick = run2023Simulation;
+        document.getElementById('btnBuy').onclick = () => doTrade(true);
+        document.getElementById('btnSell').onclick = () => doTrade(false);
+        document.getElementById('startQuizBtn').onclick = () => loadQuiz();
+
+        document.querySelectorAll('.sim-option').forEach(b => {
+            if (b.classList.contains('disabled')) return;
+            b.onclick = () => showSimOption(b.dataset.option);
+        });
+        document.getElementById('btnStartLive').onclick = startLiveSimulation;
+        document.getElementById('btnStockFacts').onclick = showStockFacts;
+
+        // Init
+        renderStockPicker();
+        renderLiveStockPicker();
+        loadLiveSimSession();
+        fetchCrypto().then(() => { if (document.getElementById('panel-trading').classList.contains('active')) renderAssets(); });
+    </script>
+</body>
+</html>

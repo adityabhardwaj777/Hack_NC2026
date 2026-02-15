@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank - Digital Banking Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --primary-light: #4D94FF;
+            --success: #00875A;
+            --success-light: #E3FCEF;
+            --danger: #DE350B;
+            --danger-light: #FFEBE6;
+            --warning: #FF8B00;
+            --warning-light: #FFF0E0;
+            --bg-app: #F7F8FA;
+            --bg-white: #FFFFFF;
+            --bg-elevated: #FAFBFC;
+            --text-primary: #172B4D;
+            --text-secondary: #5E6C84;
+            --text-muted: #8993A4;
+            --border: #DFE1E6;
+            --border-light: #EBECF0;
+            --shadow-sm: 0 1px 2px rgba(9, 30, 66, 0.08);
+            --shadow-md: 0 4px 12px rgba(9, 30, 66, 0.1);
+            --shadow-lg: 0 8px 24px rgba(9, 30, 66, 0.12);
+            --shadow-xl: 0 12px 40px rgba(9, 30, 66, 0.15);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-app);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 0.625rem 1.25rem;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.25);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        /* Section Toggle */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Account Cards */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .account-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .account-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .account-card.savings {
+            background: linear-gradient(135deg, #00875A 0%, #006644 100%);
+        }
+
+        .account-type {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .account-balance {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .account-number {
+            font-size: 0.875rem;
+            opacity: 0.85;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        .account-chip {
+            width: 50px;
+            height: 38px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-light);
+            border-color: var(--text-muted);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Transaction List */
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--primary);
+            transition: all 0.2s ease;
+        }
+
+        .transaction-item:hover {
+            background: var(--bg-app);
+            transform: translateX(4px);
+        }
+
+        .transaction-item.expense {
+            border-left-color: var(--danger);
+        }
+
+        .transaction-item.income {
+            border-left-color: var(--success);
+        }
+
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .transaction-details {
+            flex: 1;
+            margin-left: 1rem;
+        }
+
+        .transaction-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.9375rem;
+        }
+
+        .transaction-meta {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.25rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .transaction-amount.positive {
+            color: var(--success);
+        }
+
+        .transaction-amount.negative {
+            color: var(--danger);
+        }
+
+        /* Budget Section */
+        .budget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .budget-category {
+            padding: 1.75rem;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .budget-category:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .budget-spent {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--bg-elevated);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 5px;
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, var(--warning), #FFB84D);
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, var(--danger), #FF5630);
+        }
+
+        .progress-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* Game Section */
+        .game-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: 3.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .game-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .game-score {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .game-question {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            margin: 2.5rem 0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .game-question h3 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .game-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .game-option {
+            padding: 1.75rem;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .game-option:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .game-option.correct {
+            border-color: #00C781;
+            background: rgba(0, 199, 129, 0.3);
+        }
+
+        .game-option.incorrect {
+            border-color: #FF5630;
+            background: rgba(255, 86, 48, 0.3);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .quick-action {
+            padding: 1.75rem;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-action-label {
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(9, 30, 66, 0.54);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            font-size: 1.75rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .register-steps { margin-top: 0.5rem; }
+        .step-indicator { display: flex; align-items: center; gap: 0.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .step-indicator .step { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.75rem; background: var(--bg-elevated); border-radius: 20px; font-size: 0.85rem; color: var(--text-muted); }
+        .step-indicator .step.active { background: var(--primary); color: white; }
+        .step-indicator .step.completed { background: var(--success-light); color: var(--success); }
+        .step-indicator .step-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.1); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; }
+        .step-indicator .step.active .step-num { background: rgba(255,255,255,0.3); }
+        .step-indicator .step-line { flex: 1; min-width: 20px; height: 2px; background: var(--border); }
+        .step-desc { color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 0.95rem; }
+        .step-buttons { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+        .review-box { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1rem; }
+        .review-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light); }
+        .review-row:last-child { border-bottom: none; }
+
+        .myinfo-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .myinfo-tab { padding: 0.6rem 1.25rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; }
+        .myinfo-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .myinfo-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .myinfo-panel { display: none; }
+        .myinfo-panel.active { display: block; }
+        .info-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .info-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: var(--bg-elevated); border-radius: var(--radius-md); border: 1px solid var(--border-light); }
+        .info-item-left { display: flex; align-items: center; gap: 1rem; }
+        .info-item-icon { width: 44px; height: 30px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .info-item-debit .info-item-icon { background: linear-gradient(135deg, var(--success), #00a870); }
+        .info-item-details { }
+        .info-item-title { font-weight: 600; color: var(--text-primary); }
+        .info-item-sub { font-size: 0.875rem; color: var(--text-muted); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .quick-action.requires-login { opacity: 0.85; cursor: not-allowed; }
+
+        .account-type-toggle { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-elevated); border-radius: var(--radius-md); border: 1px solid var(--border-light); }
+        .account-type-toggle label { font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; }
+        .toggle-switch { position: relative; width: 52px; height: 28px; background: var(--border); border-radius: 14px; cursor: pointer; transition: background 0.2s; }
+        .toggle-switch.active { background: var(--primary); }
+        .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        .toggle-switch.active::after { transform: translateX(24px); }
+        .toggle-labels { display: flex; gap: 0.75rem; margin-left: auto; font-size: 0.875rem; }
+        .toggle-labels span { color: var(--text-muted); }
+        .toggle-labels span.active { color: var(--primary); font-weight: 600; }
+
+        .fm-tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+        .fm-tool-card { }
+        .fm-tool-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .fm-result { font-size: 0.875rem; margin-top: 0.5rem; }
+        .fm-alerts-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .fm-alert-item { padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.9rem; }
+        .fm-alert-item.over { background: rgba(222,53,11,0.15); color: var(--danger); }
+        .fm-alert-item.near { background: rgba(255,139,0,0.15); color: var(--warning); }
+        .fm-alert-item.ok { background: rgba(0,135,90,0.15); color: var(--success); }
+        .fm-summary { font-size: 0.95rem; }
+        .fm-summary-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light); }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.625rem;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        select.form-input {
+            cursor: pointer;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            padding: 1.75rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.625rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.625rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .badge-info {
+            background: #E9F2FF;
+            color: var(--primary);
+        }
+
+        /* Alert Box */
+        .alert-box {
+            padding: 1.25rem;
+            background: var(--danger-light);
+            border-left: 4px solid var(--danger);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-description {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-meta {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtext {
+            font-size: 0.9375rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <div class="logo">
+                <div class="logo-icon">🏦</div>
+                SecureBank
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dashboard" onclick="showSection('dashboard', event)">Dashboard</li>
+                <li class="nav-item" data-section="transactions" onclick="showSection('transactions', event)">Transactions</li>
+                <li class="nav-item" data-section="budget" onclick="showSection('budget', event)">Budget</li>
+                <li class="nav-item" data-section="security" onclick="showSection('security', event)">Security</li>
+                <li class="nav-item" id="navMyInfo" data-section="myinfo" onclick="showSection('myinfo', event)" style="display:none;">My Info</li>
+                <li class="nav-item" id="navFinancialManager" data-section="financialmanager" onclick="showSection('financialmanager', event)" style="display:none;">Financial Manager</li>
+                <li class="nav-item"><a href="game.html" style="text-decoration:none;color:inherit;">Game</a></li>
+                <li class="nav-item"><a href="chatbot.html" style="text-decoration:none;color:inherit;">AI Assistant</a></li>
+            </ul>
+            <div class="user-info" id="authArea">
+                <span id="authLoggedOut">
+                    <button class="btn btn-secondary" onclick="openAuthModal('login')" style="margin-right:0.5rem;">Sign In</button>
+                    <button class="btn btn-primary" onclick="openAuthModal('register')">Register</button>
+                </span>
+                <span id="authLoggedIn" style="display:none;align-items:center;gap:0.5rem;" class="user-info">
+                    <div class="avatar" id="userAvatar">?</div>
+                    <span class="user-name" id="userDisplayName">User</span>
+                    <button class="btn btn-secondary" onclick="logout()" style="margin-left:0.5rem;padding:0.4rem 0.8rem;font-size:0.85rem;">Logout</button>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Sign In</h2>
+                <span class="close-modal" onclick="closeAuthModal('login')">&times;</span>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="loginEmail" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Sign In</button>
+            </form>
+        </div>
+    </div>
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Account</h2>
+                <span class="close-modal" onclick="closeAuthModal('register')">&times;</span>
+            </div>
+            <div class="account-type-toggle">
+                <label>Account type</label>
+                <div class="toggle-switch" id="registerAccountTypeToggle" onclick="toggleRegisterAccountType()" title="Switch between Regular and Financial Manager">
+                    <span style="display:none;"></span>
+                </div>
+                <div class="toggle-labels">
+                    <span id="toggleRegularLabel" class="active">Regular</span>
+                    <span id="toggleManagerLabel">Financial Manager</span>
+                </div>
+            </div>
+            <div class="register-steps">
+                <div class="step-indicator">
+                    <div class="step" data-step="1"><span class="step-num">1</span><span class="step-label">Username</span></div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="2"><span class="step-num">2</span><span class="step-label">Email</span></div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="3"><span class="step-num">3</span><span class="step-label">Password</span></div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="4"><span class="step-num">4</span><span class="step-label">Review</span></div>
+                </div>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="register-step-content" id="registerStep1">
+                        <p class="step-desc">Choose a unique username for your account</p>
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-input" id="registerUsername" placeholder="johndoe" required>
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="registerNextStep()">Next</button>
+                        </div>
+                    </div>
+                    <div class="register-step-content" id="registerStep2" style="display:none;">
+                        <p class="step-desc">Enter your email address</p>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="registerEmail" placeholder="you@example.com" required>
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="registerPrevStep()">Back</button>
+                            <button type="button" class="btn btn-primary" onclick="registerNextStep()">Next</button>
+                        </div>
+                    </div>
+                    <div class="register-step-content" id="registerStep3" style="display:none;">
+                        <p class="step-desc">Create a secure password (at least 6 characters)</p>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" id="registerPassword" minlength="6" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-input" id="registerPasswordConfirm" minlength="6" placeholder="••••••••" required>
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="registerPrevStep()">Back</button>
+                            <button type="button" class="btn btn-primary" onclick="registerNextStep()">Next</button>
+                        </div>
+                    </div>
+                    <div class="register-step-content" id="registerStep4" style="display:none;">
+                        <p class="step-desc">Review your account details</p>
+                        <div class="review-box">
+                            <div class="review-row"><span>Account type</span><strong id="reviewAccountType">Regular</strong></div>
+                            <div class="review-row"><span>Username</span><strong id="reviewUsername">—</strong></div>
+                            <div class="review-row"><span>Email</span><strong id="reviewEmail">—</strong></div>
+                            <div class="review-row"><span>Password</span><span>••••••••</span></div>
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="registerPrevStep()">Back</button>
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="page-header">
+                <h1 class="page-title">Welcome back, John! 👋</h1>
+                <p class="page-subtitle">Here's what's happening with your money today</p>
+            </div>
+            
+            <!-- Account Cards -->
+            <div class="accounts-grid">
+                <div class="account-card">
+                    <div class="account-chip"></div>
+                    <div class="account-type">Checking Account</div>
+                    <div class="account-balance" id="checkingBalance">$0.00</div>
+                    <div class="account-number" id="checkingAccountNum">—</div>
+                </div>
+                <div class="account-card savings">
+                    <div class="account-chip"></div>
+                    <div class="account-type">Savings Account</div>
+                    <div class="account-balance" id="savingsBalance">$0.00</div>
+                    <div class="account-number" id="savingsAccountNum">—</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="quick-action" id="quickTransfer" onclick="tryBankingAction('transfer')" title="Log in to access">
+                    <div class="quick-action-icon">💸</div>
+                    <div class="quick-action-label">Transfer Money</div>
+                </div>
+                <div class="quick-action" id="quickDeposit" onclick="tryBankingAction('deposit')" title="Log in to access">
+                    <div class="quick-action-icon">💰</div>
+                    <div class="quick-action-label">Deposit Funds</div>
+                </div>
+                <div class="quick-action" id="quickPay" onclick="tryBankingAction('pay')" title="Log in to access">
+                    <div class="quick-action-icon">💳</div>
+                    <div class="quick-action-label">Pay Bills</div>
+                </div>
+                <a href="game.html" class="quick-action" style="text-decoration:none;color:inherit;">
+                    <div class="quick-action-icon">🎮</div>
+                    <div class="quick-action-label">Game</div>
+                </a>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Activity</h2>
+                    <button class="btn btn-secondary" onclick="showSection('transactions')">View All</button>
+                </div>
+                <div class="transaction-list" id="recentTransactions">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">No transactions yet</div>
+                        <div class="empty-subtext">Try making a deposit or payment to get started</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Section -->
+        <div id="transactions" class="section">
+            <div class="page-header">
+                <h1 class="page-title">All Transactions</h1>
+                <p class="page-subtitle">Complete history of your account activity</p>
+            </div>
+            
+            <div class="card">
+                <div class="transaction-list" id="allTransactions">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">No transactions yet</div>
+                        <div class="empty-subtext">Your transaction history will appear here</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Section -->
+        <div id="budget" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Monthly Budget</h1>
+                <p class="page-subtitle">Track your spending across categories</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Budget</div>
+                    <div class="stat-value" id="totalBudget">$3,000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Spent This Month</div>
+                    <div class="stat-value" id="totalSpent">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Remaining</div>
+                    <div class="stat-value" style="color: var(--success);" id="remaining">$3,000</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Budget Categories</h2>
+                </div>
+                <div class="budget-grid" id="budgetCategories"></div>
+            </div>
+        </div>
+
+        <!-- Security Section -->
+        <div id="security" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Security & Fraud Protection</h1>
+                <p class="page-subtitle">AI-powered protection for your accounts</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Threats Blocked</div>
+                    <div class="stat-value" style="color: var(--danger);" id="threatsBlocked">0</div>
+                    <div class="stat-change positive">↑ 100% protected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Money Protected</div>
+                    <div class="stat-value" style="color: var(--success);" id="moneyProtected">$0</div>
+                    <div class="stat-change positive">↑ Fraud prevented</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Security Score</div>
+                    <div class="stat-value" style="color: var(--primary);">98%</div>
+                    <div class="stat-change positive">↑ Excellent</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🛡️ Active Protection</h2>
+                    <span class="badge badge-success">✓ All Systems Secure</span>
+                </div>
+                <div id="securityAlerts">
+                    <div class="empty-state">
+                        <div class="empty-icon">🛡️</div>
+                        <div class="empty-text">No security threats detected</div>
+                        <div class="empty-subtext">AI is actively monitoring all transactions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Info Section (Cards, Bank Accounts, Personal) -->
+        <div id="myinfo" class="section">
+            <div class="page-header">
+                <h1 class="page-title">My Info</h1>
+                <p class="page-subtitle">Manage your payment methods, linked accounts, and personal information</p>
+            </div>
+
+            <div class="myinfo-tabs">
+                <button class="myinfo-tab active" data-tab="cards">💳 Cards</button>
+                <button class="myinfo-tab" data-tab="banks">🏦 Bank Accounts</button>
+                <button class="myinfo-tab" data-tab="personal">👤 Personal Info</button>
+            </div>
+
+            <div id="myinfoCards" class="myinfo-panel active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Credit & Debit Cards</h2>
+                        <button class="btn btn-primary" onclick="openAddCardModal()">+ Add Card</button>
+                    </div>
+                    <div id="cardsList" class="info-list"></div>
+                </div>
+            </div>
+
+            <div id="myinfoBanks" class="myinfo-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Linked Bank Accounts</h2>
+                        <button class="btn btn-primary" onclick="openAddBankModal()">+ Add Bank</button>
+                    </div>
+                    <div id="banksList" class="info-list"></div>
+                </div>
+            </div>
+
+            <div id="myinfoPersonal" class="myinfo-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Personal Information</h2>
+                        <button class="btn btn-primary" onclick="savePersonalInfo()">Save</button>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Street Address</label>
+                            <input type="text" class="form-input" id="personalAddress" placeholder="123 Main St">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <input type="text" class="form-input" id="personalCity" placeholder="New York">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">State / Province</label>
+                            <input type="text" class="form-input" id="personalState" placeholder="NY">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ZIP / Postal Code</label>
+                            <input type="text" class="form-input" id="personalZip" placeholder="10001">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-input" id="personalPhone" placeholder="(555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="text" class="form-input" id="personalDob" placeholder="MM/DD/YYYY">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Manager Section (visible only for manager accounts) -->
+        <div id="financialmanager" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Financial Manager Dashboard</h1>
+                <p class="page-subtitle">Automate tasks and manage accounts efficiently</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Balance</div>
+                    <div class="stat-value" id="fmTotalBalance">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Transactions</div>
+                    <div class="stat-value" id="fmTxCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Budget Status</div>
+                    <div class="stat-value" id="fmBudgetStatus" style="font-size:1rem;">On track</div>
+                </div>
+            </div>
+
+            <div class="fm-tools-grid">
+                <div class="card fm-tool-card">
+                    <div class="card-header">
+                        <h2 class="card-title">📋 Batch Categorize</h2>
+                    </div>
+                    <p class="fm-tool-desc">Apply a category to multiple uncategorized transactions at once.</p>
+                    <div class="form-row">
+                        <select class="form-input" id="fmBatchCategory">
+                            <option value="utilities">Utilities</option>
+                            <option value="groceries">Groceries</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="dining">Dining Out</option>
+                            <option value="transport">Transportation</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="income">Income</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="fmBatchCategorize()">Apply to Uncategorized</button>
+                    </div>
+                    <p id="fmBatchResult" class="fm-result"></p>
+                </div>
+
+                <div class="card fm-tool-card">
+                    <div class="card-header">
+                        <h2 class="card-title">📊 Export Report</h2>
+                    </div>
+                    <p class="fm-tool-desc">Download a summary of transactions and account balances.</p>
+                    <button class="btn btn-primary" onclick="fmExportReport()">Generate & Download</button>
+                </div>
+
+                <div class="card fm-tool-card">
+                    <div class="card-header">
+                        <h2 class="card-title">⚠️ Budget Alerts</h2>
+                    </div>
+                    <p class="fm-tool-desc">See which categories are over or near their limits.</p>
+                    <div id="fmBudgetAlerts" class="fm-alerts-list"></div>
+                </div>
+
+                <div class="card fm-tool-card">
+                    <div class="card-header">
+                        <h2 class="card-title">🔄 Quick Transfer</h2>
+                    </div>
+                    <p class="fm-tool-desc">Fast transfer between checking and savings.</p>
+                    <div class="form-group">
+                        <input type="number" class="form-input" id="fmQuickAmount" placeholder="Amount" step="0.01" min="0">
+                    </div>
+                    <div class="form-row">
+                        <button class="btn btn-secondary" onclick="fmQuickTransfer('checking','savings')">Checking → Savings</button>
+                        <button class="btn btn-secondary" onclick="fmQuickTransfer('savings','checking')">Savings → Checking</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📌 Account Summary</h2>
+                </div>
+                <div id="fmAccountSummary" class="fm-summary"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Add Card Modal -->
+    <div id="addCardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Card</h2>
+                <span class="close-modal" onclick="closeModal('addCard')">&times;</span>
+            </div>
+            <form onsubmit="handleAddCard(event)">
+                <div class="form-group">
+                    <label class="form-label">Cardholder Name</label>
+                    <input type="text" class="form-input" id="cardName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Card Number (last 4 digits only)</label>
+                    <input type="text" class="form-input" id="cardLast4" maxlength="4" pattern="[0-9]{4}" placeholder="1234" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Expiry (MM/YY)</label>
+                        <input type="text" class="form-input" id="cardExpiry" maxlength="5" placeholder="12/28" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-input" id="cardType">
+                            <option value="credit">Credit</option>
+                            <option value="debit">Debit</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Add Card</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Bank Modal -->
+    <div id="addBankModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Bank Account</h2>
+                <span class="close-modal" onclick="closeModal('addBank')">&times;</span>
+            </div>
+            <form onsubmit="handleAddBank(event)">
+                <div class="form-group">
+                    <label class="form-label">Bank Name</label>
+                    <input type="text" class="form-input" id="bankName" required placeholder="Chase Bank">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Type</label>
+                    <select class="form-input" id="bankAccountType">
+                        <option value="checking">Checking</option>
+                        <option value="savings">Savings</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Number (last 4 digits)</label>
+                    <input type="text" class="form-input" id="bankLast4" maxlength="4" pattern="[0-9]{4}" placeholder="5678" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Routing Number (last 4 digits)</label>
+                    <input type="text" class="form-input" id="bankRoutingLast4" maxlength="4" pattern="[0-9]{4}" placeholder="7890">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Add Bank</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modals (same as before but with updated styling) -->
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Transfer Money</h2>
+                <span class="close-modal" onclick="closeModal('transfer')">&times;</span>
+            </div>
+            <form onsubmit="handleTransfer(event)">
+                <div class="form-group">
+                    <label class="form-label">From Account</label>
+                    <select class="form-input" id="fromAccount">
+                        <option value="checking">Checking (•••• 4521)</option>
+                        <option value="savings">Savings (•••• 7832)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">To Account</label>
+                    <select class="form-input" id="toAccount">
+                        <option value="savings">Savings (•••• 7832)</option>
+                        <option value="checking">Checking (•••• 4521)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="transferAmount" step="0.01" min="0.01" required placeholder="$0.00">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Complete Transfer</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Deposit Money</h2>
+                <span class="close-modal" onclick="closeModal('deposit')">&times;</span>
+            </div>
+            <form onsubmit="handleDeposit(event)">
+                <div class="form-group">
+                    <label class="form-label">To Account</label>
+                    <select class="form-input" id="depositAccount">
+                        <option value="checking">Checking (•••• 4521)</option>
+                        <option value="savings">Savings (•••• 7832)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="depositAmount" step="0.01" min="0.01" required placeholder="$0.00">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Deposit Funds</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="payModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Pay Bills</h2>
+                <span class="close-modal" onclick="closeModal('pay')">&times;</span>
+            </div>
+            <form onsubmit="handlePayment(event)">
+                <div class="form-group">
+                    <label class="form-label">Merchant/Payee</label>
+                    <input type="text" class="form-input" id="payee" placeholder="e.g., Electric Company" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-input" id="category">
+                        <option value="utilities">Utilities</option>
+                        <option value="groceries">Groceries</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="dining">Dining Out</option>
+                        <option value="transport">Transportation</option>
+                        <option value="shopping">Shopping</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="payAmount" step="0.01" min="0.01" required placeholder="$0.00">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================
+           SECUREBANK - FULLY FUNCTIONAL BANKING APPLICATION
+           Complete implementation with all features working
+           ========================================================== */
+
+        // ==================== DATA MODELS ====================
+
+        class BankAccount {
+            constructor(type, accountNumber) {
+                this.type = type;
+                this.accountNumber = accountNumber;
+                this.balance = type === 'checking' ? 2500.00 : 5000.00;
+                this.transactions = [];
+            }
+
+            deposit(amount) {
+                this.balance += amount;
+                return this.balance;
+            }
+
+            withdraw(amount) {
+                if (this.balance >= amount) {
+                    this.balance -= amount;
+                    return true;
+                }
+                return false;
+            }
+
+            getBalance() {
+                return this.balance;
+            }
+        }
+
+        class Transaction {
+            constructor(type, amount, description, category, fromAccount, toAccount = null) {
+                this.id = Date.now() + Math.random();
+                this.type = type;
+                this.amount = amount;
+                this.description = description;
+                this.category = category;
+                this.fromAccount = fromAccount;
+                this.toAccount = toAccount;
+                this.timestamp = new Date();
+                this.fraudCheck = null;
+            }
+        }
+
+        class FraudDetector {
+            constructor() {
+                this.suspiciousPatterns = [
+                    { merchant: /dark\s*web/i, risk: 100 },
+                    { merchant: /unknown/i, risk: 80 },
+                    { merchant: /crypto\s*exchange/i, risk: 60 },
+                    { merchant: /suspicious/i, risk: 70 }
+                ];
+                this.blockedCount = 0;
+                this.moneyProtected = 0;
+            }
+
+            analyzeTransaction(transaction) {
+                let riskScore = 0;
+                let reasons = [];
+
+                // Check merchant patterns
+                if (transaction.description) {
+                    for (let pattern of this.suspiciousPatterns) {
+                        if (pattern.merchant && pattern.merchant.test(transaction.description)) {
+                            riskScore += pattern.risk;
+                            reasons.push(`Suspicious merchant: ${transaction.description}`);
+                            break;
+                        }
+                    }
+                }
+
+                // Check amount
+                if (transaction.amount > 5000) {
+                    riskScore += 40;
+                    reasons.push(`Large transaction: $${transaction.amount.toFixed(2)}`);
+                } else if (transaction.amount > 2000) {
+                    riskScore += 20;
+                    reasons.push(`Elevated transaction amount`);
+                }
+
+                // Check velocity
+                const recentTransactions = appState.transactions.filter(t => 
+                    Date.now() - t.timestamp.getTime() < 300000
+                );
+                if (recentTransactions.length > 5) {
+                    riskScore += 30;
+                    reasons.push('High transaction velocity');
+                }
+
+                const isBlocked = riskScore >= 70;
+                const isSuspicious = riskScore >= 40 && riskScore < 70;
+
+                if (isBlocked) {
+                    this.blockedCount++;
+                    this.moneyProtected += transaction.amount;
+                }
+
+                return {
+                    riskScore,
+                    isBlocked,
+                    isSuspicious,
+                    reasons: reasons.length > 0 ? reasons : ['Normal transaction pattern'],
+                    status: isBlocked ? 'BLOCKED' : isSuspicious ? 'FLAGGED' : 'SAFE'
+                };
+            }
+        }
+
+        // ==================== APPLICATION STATE ====================
+
+        const appState = {
+            accounts: {
+                checking: new BankAccount('checking', '4521'),
+                savings: new BankAccount('savings', '7832')
+            },
+            transactions: [],
+            fraudDetector: new FraudDetector(),
+            budget: {
+                total: 3000,
+                categories: {
+                    groceries: { limit: 600, spent: 0 },
+                    utilities: { limit: 300, spent: 0 },
+                    entertainment: { limit: 400, spent: 0 },
+                    dining: { limit: 500, spent: 0 },
+                    transport: { limit: 400, spent: 0 },
+                    shopping: { limit: 800, spent: 0 }
+                }
+            },
+            myInfo: {
+                cards: [],
+                banks: [],
+                personal: { address: '', city: '', state: '', zip: '', phone: '', dob: '' }
+            }
+        };
+
+        // ==================== UI FUNCTIONS ====================
+
+        function showSection(sectionName, evt) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const target = evt && evt.target ? (evt.target.closest('.nav-item') || evt.target) : document.querySelector(`.nav-item[data-section="${sectionName}"]`);
+            if (target) target.classList.add('active');
+
+            // Update section-specific content
+            if (sectionName === 'budget') {
+                updateBudgetDisplay();
+            } else if (sectionName === 'security') {
+                updateSecurityDisplay();
+            } else if (sectionName === 'transactions') {
+                updateAllTransactions();
+            } else if (sectionName === 'myinfo') {
+                updateMyInfoDisplay();
+            } else if (sectionName === 'financialmanager') {
+                updateFinancialManagerDisplay();
+            }
+        }
+
+        function updateMyInfoDisplay() {
+            const cardsList = document.getElementById('cardsList');
+            const banksList = document.getElementById('banksList');
+            if (!cardsList) return;
+            if (appState.myInfo.cards.length === 0) {
+                cardsList.innerHTML = '<div class="empty-state"><div class="empty-icon">💳</div><div class="empty-text">No cards added</div><div class="empty-subtext">Add a credit or debit card</div></div>';
+            } else {
+                cardsList.innerHTML = appState.myInfo.cards.map((c, i) => `
+                    <div class="info-item info-item-${c.type}">
+                        <div class="info-item-left">
+                            <div class="info-item-icon">${c.type === 'credit' ? '💳' : '🏦'}</div>
+                            <div class="info-item-details">
+                                <div class="info-item-title">•••• •••• •••• ${c.last4}</div>
+                                <div class="info-item-sub">${c.cardholder} · ${c.type} · Exp ${c.expiry}</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" style="padding:0.4rem 0.8rem;font-size:0.85rem;" onclick="removeCard(${i})">Remove</button>
+                    </div>
+                `).join('');
+            }
+            if (appState.myInfo.banks.length === 0) {
+                banksList.innerHTML = '<div class="empty-state"><div class="empty-icon">🏦</div><div class="empty-text">No bank accounts linked</div><div class="empty-subtext">Link an external bank account</div></div>';
+            } else {
+                banksList.innerHTML = appState.myInfo.banks.map((b, i) => `
+                    <div class="info-item">
+                        <div class="info-item-left">
+                            <div class="info-item-icon">🏦</div>
+                            <div class="info-item-details">
+                                <div class="info-item-title">${b.bankName} · •••• ${b.last4}</div>
+                                <div class="info-item-sub">${b.accountType} · Routing •••• ${b.routingLast4 || '----'}</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" style="padding:0.4rem 0.8rem;font-size:0.85rem;" onclick="removeBank(${i})">Remove</button>
+                    </div>
+                `).join('');
+            }
+            const p = appState.myInfo.personal;
+            document.getElementById('personalAddress').value = p.address || '';
+            document.getElementById('personalCity').value = p.city || '';
+            document.getElementById('personalState').value = p.state || '';
+            document.getElementById('personalZip').value = p.zip || '';
+            document.getElementById('personalPhone').value = p.phone || '';
+            document.getElementById('personalDob').value = p.dob || '';
+        }
+
+        document.querySelectorAll('.myinfo-tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.myinfo-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.myinfo-panel').forEach(p => p.classList.remove('active'));
+                const id = 'myinfo' + tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1);
+                document.getElementById(id).classList.add('active');
+            };
+        });
+
+        function openAddCardModal() { document.getElementById('addCardModal').classList.add('active'); }
+        function openAddBankModal() { document.getElementById('addBankModal').classList.add('active'); }
+
+        function handleAddCard(e) {
+            e.preventDefault();
+            const cardholder = document.getElementById('cardName').value.trim();
+            const last4 = document.getElementById('cardLast4').value.replace(/\D/g, '').slice(-4);
+            let expiry = document.getElementById('cardExpiry').value.trim();
+            if (!/^\d{1,2}\/\d{2}$/.test(expiry)) expiry = expiry.replace(/\D/g, '').replace(/(\d{2})(\d{2})/, '$1/$2');
+            const type = document.getElementById('cardType').value;
+            appState.myInfo.cards.push({ id: Date.now(), cardholder, last4, expiry, type });
+            document.getElementById('cardName').value = ''; document.getElementById('cardLast4').value = '';
+            document.getElementById('cardExpiry').value = ''; document.getElementById('cardType').value = 'credit';
+            closeModal('addCard');
+            updateMyInfoDisplay();
+            saveUserProgress();
+            showNotification('Card added', 'success');
+        }
+
+        function handleAddBank(e) {
+            e.preventDefault();
+            const bankName = document.getElementById('bankName').value.trim();
+            const accountType = document.getElementById('bankAccountType').value;
+            const last4 = document.getElementById('bankLast4').value.replace(/\D/g, '').slice(-4);
+            const routingLast4 = document.getElementById('bankRoutingLast4').value.replace(/\D/g, '').slice(-4) || null;
+            appState.myInfo.banks.push({ id: Date.now(), bankName, accountType, last4, routingLast4 });
+            document.getElementById('bankName').value = ''; document.getElementById('bankAccountType').value = 'checking';
+            document.getElementById('bankLast4').value = ''; document.getElementById('bankRoutingLast4').value = '';
+            closeModal('addBank');
+            updateMyInfoDisplay();
+            saveUserProgress();
+            showNotification('Bank account added', 'success');
+        }
+
+        function removeCard(i) { appState.myInfo.cards.splice(i, 1); updateMyInfoDisplay(); saveUserProgress(); showNotification('Card removed', 'success'); }
+        function removeBank(i) { appState.myInfo.banks.splice(i, 1); updateMyInfoDisplay(); saveUserProgress(); showNotification('Bank removed', 'success'); }
+
+        function updateFinancialManagerDisplay() {
+            const total = appState.accounts.checking.getBalance() + appState.accounts.savings.getBalance();
+            const txCount = appState.transactions.length;
+            document.getElementById('fmTotalBalance').textContent = '$' + total.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('fmTxCount').textContent = txCount;
+            const totalSpent = Object.values(appState.budget.categories).reduce((s, c) => s + c.spent, 0);
+            const totalBudget = appState.budget.total;
+            const pct = totalBudget ? (totalSpent / totalBudget * 100) : 0;
+            const budgetEl = document.getElementById('fmBudgetStatus');
+            budgetEl.textContent = pct > 100 ? 'Over budget' : pct > 80 ? 'Near limit' : 'On track';
+            budgetEl.style.color = pct > 100 ? 'var(--danger)' : pct > 80 ? 'var(--warning)' : 'var(--success)';
+            const alerts = document.getElementById('fmBudgetAlerts');
+            alerts.innerHTML = Object.entries(appState.budget.categories).map(([name, d]) => {
+                const p = d.limit ? (d.spent / d.limit * 100) : 0;
+                const cls = p > 100 ? 'over' : p > 80 ? 'near' : 'ok';
+                return `<div class="fm-alert-item ${cls}">${name}: $${d.spent.toFixed(0)} / $${d.limit} (${p.toFixed(0)}%)</div>`;
+            }).join('');
+            const summary = document.getElementById('fmAccountSummary');
+            summary.innerHTML = `
+                <div class="fm-summary-row"><span>Checking</span><strong>$${appState.accounts.checking.getBalance().toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></div>
+                <div class="fm-summary-row"><span>Savings</span><strong>$${appState.accounts.savings.getBalance().toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></div>
+                <div class="fm-summary-row"><span>Total</span><strong>$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></div>
+                <div class="fm-summary-row"><span>Transactions this period</span><strong>${txCount}</strong></div>
+            `;
+        }
+
+        function fmBatchCategorize() {
+            const cat = document.getElementById('fmBatchCategory').value;
+            let count = 0;
+            appState.transactions.forEach(t => {
+                if (!t.category || t.category === 'other' || t.category === '') {
+                    t.category = cat;
+                    count++;
+                }
+            });
+            updateRecentTransactions(); updateAllTransactions(); updateBudgetDisplay();
+            saveUserProgress();
+            document.getElementById('fmBatchResult').textContent = count > 0 ? `Applied "${cat}" to ${count} transaction(s).` : 'No uncategorized transactions found.';
+        }
+
+        function fmExportReport() {
+            const lines = [
+                'SecureBank - Financial Report',
+                'Generated: ' + new Date().toLocaleString(),
+                '',
+                '--- ACCOUNT SUMMARY ---',
+                'Checking: $' + appState.accounts.checking.getBalance().toFixed(2),
+                'Savings: $' + appState.accounts.savings.getBalance().toFixed(2),
+                'Total: $' + (appState.accounts.checking.getBalance() + appState.accounts.savings.getBalance()).toFixed(2),
+                '',
+                '--- RECENT TRANSACTIONS ---'
+            ];
+            [...appState.transactions].reverse().slice(0, 50).forEach(t => {
+                lines.push(`${t.timestamp?.toLocaleDateString?.() || ''} | ${t.type} | $${t.amount.toFixed(2)} | ${t.description || ''} | ${t.category || ''}`);
+            });
+            const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'securebank-report-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showNotification('Report downloaded', 'success');
+        }
+
+        function fmQuickTransfer(from, to) {
+            const amt = parseFloat(document.getElementById('fmQuickAmount').value) || 0;
+            if (amt <= 0) { showNotification('Enter a valid amount', 'error'); return; }
+            if (appState.accounts[from].withdraw(amt)) {
+                appState.accounts[to].deposit(amt);
+                appState.transactions.push(new Transaction('transfer', amt, `FM Quick: ${from} → ${to}`, 'transfer', from, to));
+                document.getElementById('fmQuickAmount').value = '';
+                updateBalances(); updateRecentTransactions(); updateAllTransactions();
+                updateFinancialManagerDisplay();
+                saveUserProgress();
+                showNotification(`Transferred $${amt.toFixed(2)} from ${from} to ${to}`, 'success');
+            } else showNotification('Insufficient funds', 'error');
+        }
+
+        function savePersonalInfo() {
+            appState.myInfo.personal = {
+                address: document.getElementById('personalAddress').value.trim(),
+                city: document.getElementById('personalCity').value.trim(),
+                state: document.getElementById('personalState').value.trim(),
+                zip: document.getElementById('personalZip').value.trim(),
+                phone: document.getElementById('personalPhone').value.trim(),
+                dob: document.getElementById('personalDob').value.trim()
+            };
+            saveUserProgress();
+            showNotification('Personal info saved', 'success');
+        }
+
+        function updateBalances() {
+            document.getElementById('checkingBalance').textContent = 
+                '$' + appState.accounts.checking.getBalance().toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('savingsBalance').textContent = 
+                '$' + appState.accounts.savings.getBalance().toLocaleString('en-US', { minimumFractionDigits: 2 });
+        }
+
+        function updateAllTransactions() {
+            const allContainer = document.getElementById('allTransactions');
+            
+            if (appState.transactions.length === 0) {
+                allContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">No transactions yet</div>
+                        <div class="empty-subtext">Your transaction history will appear here</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const all = [...appState.transactions].reverse();
+            allContainer.innerHTML = all.map(t => createTransactionHTML(t)).join('');
+        }
+
+        function updateRecentTransactions() {
+            const recentContainer = document.getElementById('recentTransactions');
+            
+            if (appState.transactions.length === 0) {
+                recentContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">No transactions yet</div>
+                        <div class="empty-subtext">Try making a deposit or payment to get started</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const recent = appState.transactions.slice(-5).reverse();
+            recentContainer.innerHTML = recent.map(t => createTransactionHTML(t)).join('');
+        }
+
+        function createTransactionHTML(transaction) {
+            let isPositive = false;
+            let amount = '';
+            let icon = '💳';
+
+            if (transaction.type === 'deposit') {
+                isPositive = true;
+                amount = `+$${transaction.amount.toFixed(2)}`;
+                icon = '💰';
+            } else if (transaction.type === 'transfer') {
+                isPositive = transaction.toAccount !== null;
+                amount = isPositive ? `+$${transaction.amount.toFixed(2)}` : `-$${transaction.amount.toFixed(2)}`;
+                icon = '💸';
+            } else {
+                amount = `-$${transaction.amount.toFixed(2)}`;
+                icon = '💳';
+            }
+
+            const fraudBadge = transaction.fraudCheck ? 
+                (transaction.fraudCheck.isBlocked ? '<span class="badge badge-danger">🛡️ BLOCKED</span>' : 
+                 transaction.fraudCheck.isSuspicious ? '<span class="badge badge-warning">⚠️ FLAGGED</span>' : 
+                 '<span class="badge badge-success">✓ VERIFIED</span>') : '';
+
+            return `
+                <div class="transaction-item ${isPositive ? 'income' : 'expense'}">
+                    <div class="transaction-icon">${icon}</div>
+                    <div class="transaction-details">
+                        <div class="transaction-name">${transaction.description} ${fraudBadge}</div>
+                        <div class="transaction-meta">${transaction.timestamp.toLocaleString()} • ${transaction.category || 'general'}</div>
+                    </div>
+                    <div class="transaction-amount ${isPositive ? 'positive' : 'negative'}">${amount}</div>
+                </div>
+            `;
+        }
+
+        function updateBudgetDisplay() {
+            const totalSpent = Object.values(appState.budget.categories).reduce((sum, cat) => sum + cat.spent, 0);
+            const remaining = appState.budget.total - totalSpent;
+
+            document.getElementById('totalBudget').textContent = '$' + appState.budget.total.toLocaleString();
+            document.getElementById('totalSpent').textContent = '$' + totalSpent.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            document.getElementById('remaining').textContent = '$' + remaining.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+            const container = document.getElementById('budgetCategories');
+            container.innerHTML = Object.entries(appState.budget.categories).map(([name, data]) => {
+                const percentage = (data.spent / data.limit) * 100;
+                const progressClass = percentage >= 90 ? 'danger' : percentage >= 75 ? 'warning' : '';
+
+                return `
+                    <div class="budget-category">
+                        <div class="budget-header">
+                            <span class="category-name">${name.charAt(0).toUpperCase() + name.slice(1)}</span>
+                            <span class="budget-spent">$${data.spent.toFixed(2)} / $${data.limit}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${progressClass}" style="width: ${Math.min(percentage, 100)}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            ${Math.round(percentage)}% used
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateSecurityDisplay() {
+            document.getElementById('threatsBlocked').textContent = appState.fraudDetector.blockedCount;
+            document.getElementById('moneyProtected').textContent = '$' + appState.fraudDetector.moneyProtected.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+            const alertsContainer = document.getElementById('securityAlerts');
+            const blockedTransactions = appState.transactions.filter(t => t.fraudCheck && t.fraudCheck.isBlocked);
+
+            if (blockedTransactions.length === 0) {
+                alertsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🛡️</div>
+                        <div class="empty-text">No security threats detected</div>
+                        <div class="empty-subtext">AI is actively monitoring all transactions</div>
+                    </div>
+                `;
+            } else {
+                alertsContainer.innerHTML = blockedTransactions.map(t => `
+                    <div class="alert-box">
+                        <div class="alert-title">🚨 Fraud Attempt Blocked</div>
+                        <div class="alert-description">
+                            <strong>${t.description}</strong> - $${t.amount.toFixed(2)}
+                        </div>
+                        <div class="alert-meta">
+                            Risk Score: ${t.fraudCheck.riskScore}% | ${t.fraudCheck.reasons.join(', ')} | ${t.timestamp.toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ==================== TRANSACTION HANDLERS ====================
+
+        function handleDeposit(event) {
+            event.preventDefault();
+            
+            const account = document.getElementById('depositAccount').value;
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            const transaction = new Transaction('deposit', amount, 'Direct Deposit', 'income', null, account);
+            appState.accounts[account].deposit(amount);
+            appState.transactions.push(transaction);
+
+            updateBalances();
+            updateRecentTransactions();
+            updateAllTransactions();
+            closeModal('deposit');
+            document.getElementById('depositAmount').value = '';
+            saveUserProgress();
+            showNotification(`✓ Deposited $${amount.toFixed(2)} to ${account}`, 'success');
+        }
+
+        function handleTransfer(event) {
+            event.preventDefault();
+            
+            const from = document.getElementById('fromAccount').value;
+            const to = document.getElementById('toAccount').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            if (from === to) {
+                showNotification('Cannot transfer to the same account', 'error');
+                return;
+            }
+
+            if (appState.accounts[from].withdraw(amount)) {
+                appState.accounts[to].deposit(amount);
+                
+                const transaction = new Transaction('transfer', amount, `Transfer from ${from} to ${to}`, 'transfer', from, to);
+                appState.transactions.push(transaction);
+
+                updateBalances();
+                updateRecentTransactions();
+                updateAllTransactions();
+                closeModal('transfer');
+                document.getElementById('transferAmount').value = '';
+                saveUserProgress();
+                showNotification(`✓ Transferred $${amount.toFixed(2)} from ${from} to ${to}`, 'success');
+            } else {
+                showNotification('Insufficient funds in ' + from + ' account', 'error');
+            }
+        }
+
+        function handlePayment(event) {
+            event.preventDefault();
+            
+            const payee = document.getElementById('payee').value.trim();
+            const category = document.getElementById('category').value;
+            const amount = parseFloat(document.getElementById('payAmount').value);
+
+            if (!payee) {
+                showNotification('Please enter a payee name', 'error');
+                return;
+            }
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            const transaction = new Transaction('payment', amount, payee, category, 'checking');
+            
+            const fraudCheck = appState.fraudDetector.analyzeTransaction(transaction);
+            transaction.fraudCheck = fraudCheck;
+
+            if (fraudCheck.isBlocked) {
+                appState.transactions.push(transaction);
+                updateRecentTransactions();
+                updateAllTransactions();
+                updateSecurityDisplay();
+                closeModal('pay');
+                
+                document.getElementById('payee').value = '';
+                document.getElementById('payAmount').value = '';
+                
+                showNotification(`🚨 TRANSACTION BLOCKED - ${fraudCheck.reasons.join(', ')}`, 'error');
+                return;
+            }
+
+            if (appState.accounts.checking.withdraw(amount)) {
+                if (appState.budget.categories[category]) {
+                    appState.budget.categories[category].spent += amount;
+                }
+
+                appState.transactions.push(transaction);
+
+                updateBalances();
+                updateRecentTransactions();
+                updateAllTransactions();
+                updateBudgetDisplay();
+                closeModal('pay');
+                document.getElementById('payee').value = '';
+                document.getElementById('payAmount').value = '';
+                saveUserProgress();
+                if (fraudCheck.isSuspicious) {
+                    showNotification(`⚠️ Payment processed but flagged: ${fraudCheck.reasons.join(', ')}`, 'warning');
+                } else {
+                    showNotification(`✓ Payment of $${amount.toFixed(2)} to ${payee} successful`, 'success');
+                }
+            } else {
+                showNotification('Insufficient funds in checking account', 'error');
+            }
+        }
+
+        // ==================== MODAL FUNCTIONS ====================
+
+        function tryBankingAction(type) {
+            if (!getAuthUser() || !getAuthToken()) {
+                showNotification('Log in to access', 'error');
+                openAuthModal('login');
+                return;
+            }
+            openModal(type);
+        }
+
+        function openModal(type) {
+            document.getElementById(type + 'Modal').classList.add('active');
+            
+            setTimeout(() => {
+                const firstInput = document.querySelector(`#${type}Modal input, #${type}Modal select`);
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function closeModal(type) {
+            document.getElementById(type + 'Modal').classList.remove('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                ['transfer', 'deposit', 'pay', 'login', 'register', 'addCard', 'addBank'].forEach(modal => {
+                    if (event.target.id === modal + 'Modal') {
+                        if (modal === 'login' || modal === 'register') closeAuthModal(modal);
+                        else closeModal(modal);
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                ['transfer', 'deposit', 'pay', 'login', 'register', 'addCard', 'addBank'].forEach(modal => {
+                    const modalEl = document.getElementById(modal + 'Modal');
+                    if (modalEl && modalEl.classList.contains('active')) {
+                        if (modal === 'login' || modal === 'register') closeAuthModal(modal);
+                        else closeModal(modal);
+                    }
+                });
+            }
+        });
+
+        // ==================== AUTH ====================
+        function getAuthToken() { return localStorage.getItem('securebank_token'); }
+        function setAuthToken(token) { localStorage.setItem('securebank_token', token); }
+        function clearAuth() { localStorage.removeItem('securebank_token'); localStorage.removeItem('securebank_user'); }
+        function setAuthUser(user) { localStorage.setItem('securebank_user', JSON.stringify(user)); }
+        function getAuthUser() { try { return JSON.parse(localStorage.getItem('securebank_user')); } catch (e) { return null; } }
+
+        function openAuthModal(type) {
+            document.getElementById(type + 'Modal').classList.add('active');
+            if (type === 'login' && document.getElementById('loginEmail').dataset.prefill) {
+                document.getElementById('loginEmail').value = document.getElementById('loginEmail').dataset.prefill;
+                document.getElementById('loginEmail').removeAttribute('data-prefill');
+            }
+        }
+        function closeAuthModal(type) {
+            document.getElementById(type + 'Modal').classList.remove('active');
+            if (type === 'register') resetRegisterSteps();
+        }
+
+        let registerAccountType = 'regular'; // 'regular' | 'manager'
+        function toggleRegisterAccountType() {
+            registerAccountType = registerAccountType === 'regular' ? 'manager' : 'regular';
+            const toggle = document.getElementById('registerAccountTypeToggle');
+            const regLabel = document.getElementById('toggleRegularLabel');
+            const mgrLabel = document.getElementById('toggleManagerLabel');
+            if (toggle) toggle.classList.toggle('active', registerAccountType === 'manager');
+            if (regLabel) regLabel.classList.toggle('active', registerAccountType === 'regular');
+            if (mgrLabel) mgrLabel.classList.toggle('active', registerAccountType === 'manager');
+        }
+
+        let registerStep = 1;
+        function updateRegisterStepUI() {
+            document.querySelectorAll('.register-step-content').forEach(el => el.style.display = 'none');
+            document.getElementById('registerStep' + registerStep).style.display = 'block';
+            document.querySelectorAll('.step-indicator .step').forEach((el, i) => {
+                el.classList.remove('active', 'completed');
+                if (i + 1 < registerStep) el.classList.add('completed');
+                else if (i + 1 === registerStep) el.classList.add('active');
+            });
+        }
+        function resetRegisterSteps() {
+            registerStep = 1;
+            registerAccountType = 'regular';
+            const toggle = document.getElementById('registerAccountTypeToggle');
+            const regLabel = document.getElementById('toggleRegularLabel');
+            const mgrLabel = document.getElementById('toggleManagerLabel');
+            if (toggle) toggle.classList.remove('active');
+            if (regLabel) regLabel.classList.add('active');
+            if (mgrLabel) mgrLabel.classList.remove('active');
+            updateRegisterStepUI();
+            document.getElementById('registerUsername').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('registerPasswordConfirm').value = '';
+        }
+        function registerNextStep() {
+            if (registerStep === 1 && !document.getElementById('registerUsername').value.trim()) { showNotification('Enter a username', 'error'); return; }
+            if (registerStep === 2 && !document.getElementById('registerEmail').value.trim()) { showNotification('Enter your email', 'error'); return; }
+            if (registerStep === 3) {
+                const p = document.getElementById('registerPassword').value;
+                const pc = document.getElementById('registerPasswordConfirm').value;
+                if (p.length < 6) { showNotification('Password must be at least 6 characters', 'error'); return; }
+                if (p !== pc) { showNotification('Passwords do not match', 'error'); return; }
+            }
+            if (registerStep < 4) {
+                registerStep++;
+                if (registerStep === 4) {
+                    document.getElementById('reviewAccountType').textContent = registerAccountType === 'manager' ? 'Financial Manager' : 'Regular';
+                    document.getElementById('reviewUsername').textContent = document.getElementById('registerUsername').value;
+                    document.getElementById('reviewEmail').textContent = document.getElementById('registerEmail').value;
+                }
+                updateRegisterStepUI();
+            }
+        }
+        function registerPrevStep() {
+            if (registerStep > 1) { registerStep--; updateRegisterStepUI(); }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                const data = await res.json();
+                if (!res.ok) { showNotification(data.error || 'Login failed', 'error'); return; }
+                setAuthToken(data.token);
+                setAuthUser({ userId: data.userId, username: data.username, accountType: data.accountType || 'regular' });
+                closeAuthModal('login');
+                document.getElementById('loginEmail').value = ''; document.getElementById('loginPassword').value = '';
+                updateAuthUI();
+                await loadUserProgress();
+                updateBalances(); updateRecentTransactions(); updateAllTransactions(); updateBudgetDisplay();
+                showNotification('Welcome back, ' + data.username + '!', 'success');
+            } catch (err) { showNotification('Could not reach server', 'error'); }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const pc = document.getElementById('registerPasswordConfirm').value;
+            if (password.length < 6) { showNotification('Password must be at least 6 characters', 'error'); return; }
+            if (password !== pc) { showNotification('Passwords do not match', 'error'); return; }
+            try {
+                const res = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password, accountType: registerAccountType === 'manager' ? 'manager' : 'regular' }) });
+                const data = await res.json();
+                if (!res.ok) { showNotification(data.error || 'Registration failed', 'error'); return; }
+                closeAuthModal('register');
+                resetRegisterSteps();
+                document.getElementById('loginEmail').dataset.prefill = email;
+                openAuthModal('login');
+                showNotification('Account created! Please sign in.', 'success');
+            } catch (err) { showNotification('Could not reach server', 'error'); }
+        }
+
+        async function loadUserProgress() {
+            const token = getAuthToken();
+            if (!token) return;
+            try {
+                const res = await fetch('/api/progress', { headers: { 'Authorization': 'Bearer ' + token } });
+                const data = await res.json();
+                if (!res.ok || !data.progress) return;
+                const p = data.progress;
+                if (p.accounts) {
+                    if (p.accounts.checking) appState.accounts.checking.balance = p.accounts.checking.balance || 0;
+                    if (p.accounts.savings) appState.accounts.savings.balance = p.accounts.savings.balance || 0;
+                }
+                if (Array.isArray(p.transactions)) appState.transactions = p.transactions.map(t => {
+                    const tx = new Transaction(t.type, t.amount, t.description, t.category, t.fromAccount || null, t.toAccount || null);
+                    tx.id = t.id; tx.timestamp = t.timestamp ? new Date(t.timestamp) : new Date(); tx.fraudCheck = t.fraudCheck;
+                    return tx;
+                });
+                if (p.budget?.categories) Object.assign(appState.budget.categories, p.budget.categories);
+                if (p.myInfo) {
+                    appState.myInfo.cards = p.myInfo.cards || [];
+                    appState.myInfo.banks = p.myInfo.banks || [];
+                    if (p.myInfo.personal) Object.assign(appState.myInfo.personal, p.myInfo.personal);
+                }
+            } catch (e) { /* ignore */ }
+        }
+
+        async function saveUserProgress() {
+            const token = getAuthToken();
+            if (!token) return;
+            const progress = {
+                accounts: {
+                    checking: { balance: appState.accounts.checking.getBalance(), number: '4521' },
+                    savings: { balance: appState.accounts.savings.getBalance(), number: '7832' }
+                },
+                transactions: appState.transactions.map(t => ({
+                    type: t.type, amount: t.amount, description: t.description, category: t.category,
+                    fromAccount: t.fromAccount, toAccount: t.toAccount, id: t.id,
+                    timestamp: t.timestamp instanceof Date ? t.timestamp.toISOString() : t.timestamp,
+                    fraudCheck: t.fraudCheck
+                })),
+                budget: { categories: appState.budget.categories },
+                myInfo: appState.myInfo
+            };
+            try {
+                await fetch('/api/progress', { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ progress }) });
+            } catch (e) { /* ignore */ }
+        }
+
+        function resetAppStateForGuest() {
+            appState.accounts.checking.balance = 0;
+            appState.accounts.savings.balance = 0;
+            appState.transactions = [];
+            appState.myInfo = { cards: [], banks: [], personal: { address: '', city: '', state: '', zip: '', phone: '', dob: '' } };
+            Object.keys(appState.budget.categories).forEach(k => { appState.budget.categories[k].spent = 0; });
+        }
+
+        function logout() {
+            clearAuth();
+            resetAppStateForGuest();
+            updateAuthUI();
+            updateBalances();
+            updateRecentTransactions();
+            updateAllTransactions();
+            updateBudgetDisplay();
+            updateMyInfoDisplay();
+            showNotification('Signed out', 'success');
+        }
+
+        function updateAuthUI() {
+            const user = getAuthUser();
+            const loggedOut = document.getElementById('authLoggedOut');
+            const loggedIn = document.getElementById('authLoggedIn');
+            const welcomeEl = document.querySelector('.page-title');
+            const navMyInfo = document.getElementById('navMyInfo');
+            const quickIds = ['quickTransfer', 'quickDeposit', 'quickPay'];
+            if (user) {
+                loggedOut.style.display = 'none';
+                loggedIn.style.display = 'flex';
+                document.getElementById('userDisplayName').textContent = user.username;
+                document.getElementById('userAvatar').textContent = (user.username || '?').substring(0, 2).toUpperCase();
+                if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + user.username + '! 👋';
+                if (navMyInfo) navMyInfo.style.display = 'list-item';
+                if (document.getElementById('navFinancialManager')) document.getElementById('navFinancialManager').style.display = user.accountType === 'manager' ? 'list-item' : 'none';
+                const checkNum = document.getElementById('checkingAccountNum');
+                const saveNum = document.getElementById('savingsAccountNum');
+                if (checkNum) checkNum.textContent = '•••• •••• •••• 4521';
+                if (saveNum) saveNum.textContent = '•••• •••• •••• 7832';
+                quickIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.removeAttribute('title'); el.classList.remove('requires-login'); }
+                });
+            } else {
+                loggedOut.style.display = 'inline';
+                loggedIn.style.display = 'none';
+                if (welcomeEl) welcomeEl.textContent = 'Welcome to SecureBank! 👋';
+                if (navMyInfo) navMyInfo.style.display = 'none';
+                if (document.getElementById('navFinancialManager')) document.getElementById('navFinancialManager').style.display = 'none';
+                const checkNum = document.getElementById('checkingAccountNum');
+                const saveNum = document.getElementById('savingsAccountNum');
+                if (checkNum) checkNum.textContent = '—';
+                if (saveNum) saveNum.textContent = '—';
+                quickIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.setAttribute('title', 'Log in to access'); el.classList.add('requires-login'); }
+                });
+            }
+        }
+
+        // ==================== NOTIFICATIONS ====================
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            
+            const colors = {
+                success: '#00875A',
+                error: '#DE350B',
+                warning: '#FF8B00'
+            };
+
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type] || colors.success};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 400px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            `;
+            
+            notification.innerHTML = `
+                <span style="font-size: 1.25rem;">${icons[type] || icons.success}</span>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { opacity: 0; transform: translateX(100px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                @keyframes slideOutRight {
+                    from { opacity: 1; transform: translateX(0); }
+                    to { opacity: 0; transform: translateX(100px); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                setTimeout(() => {
+                    notification.remove();
+                    style.remove();
+                }, 300);
+            }, 4000);
+        }
+
+        // ==================== INITIALIZATION ====================
+
+        window.addEventListener('load', async () => {
+            updateAuthUI();
+            const user = getAuthUser();
+            const token = getAuthToken();
+            if (user && token) {
+                await loadUserProgress();
+            } else {
+                resetAppStateForGuest();
+            }
+            updateBalances();
+            updateRecentTransactions();
+            updateAllTransactions();
+            updateBudgetDisplay();
+            updateSecurityDisplay();
+            if (!user) setTimeout(() => showNotification('Welcome to SecureBank! Sign in to save your progress.', 'success'), 500);
+        });
+
+        document.addEventListener('input', function(event) {
+            if (event.target.type === 'number') {
+                if (event.target.value < 0) {
+                    event.target.value = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
