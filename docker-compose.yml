@@ -1,0 +1,33 @@
+# SecureBank - Docker Compose (PostgreSQL + App)
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production_use_strong_secret}
+      DATABASE_URL: postgresql://securebank:securebank@db:5432/securebank
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: securebank
+      POSTGRES_PASSWORD: securebank
+      POSTGRES_DB: securebank
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U securebank -d securebank"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

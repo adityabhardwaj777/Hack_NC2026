@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank - Digital Banking Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --primary-light: #4D94FF;
+            --success: #00875A;
+            --success-light: #E3FCEF;
+            --danger: #DE350B;
+            --danger-light: #FFEBE6;
+            --warning: #FF8B00;
+            --warning-light: #FFF0E0;
+            --bg-app: #F7F8FA;
+            --bg-white: #FFFFFF;
+            --bg-elevated: #FAFBFC;
+            --text-primary: #172B4D;
+            --text-secondary: #5E6C84;
+            --text-muted: #8993A4;
+            --border: #DFE1E6;
+            --border-light: #EBECF0;
+            --shadow-sm: 0 1px 2px rgba(9, 30, 66, 0.08);
+            --shadow-md: 0 4px 12px rgba(9, 30, 66, 0.1);
+            --shadow-lg: 0 8px 24px rgba(9, 30, 66, 0.12);
+            --shadow-xl: 0 12px 40px rgba(9, 30, 66, 0.15);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-app);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 0.625rem 1.25rem;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.25);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        /* Section Toggle */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Account Cards */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .account-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .account-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .account-card.savings {
+            background: linear-gradient(135deg, #00875A 0%, #006644 100%);
+        }
+
+        .account-type {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .account-balance {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .account-number {
+            font-size: 0.875rem;
+            opacity: 0.85;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        .account-chip {
+            width: 50px;
+            height: 38px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-light);
+            border-color: var(--text-muted);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Transaction List */
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--primary);
+            transition: all 0.2s ease;
+        }
+
+        .transaction-item:hover {
+            background: var(--bg-app);
+            transform: translateX(4px);
+        }
+
+        .transaction-item.expense {
+            border-left-color: var(--danger);
+        }
+
+        .transaction-item.income {
+            border-left-color: var(--success);
+        }
+
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .transaction-details {
+            flex: 1;
+            margin-left: 1rem;
+        }
+
+        .transaction-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.9375rem;
+        }
+
+        .transaction-meta {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.25rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .transaction-amount.positive {
+            color: var(--success);
+        }
+
+        .transaction-amount.negative {
+            color: var(--danger);
+        }
+
+        /* Budget Section */
+        .budget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .budget-category {
+            padding: 1.75rem;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .budget-category:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .budget-spent {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--bg-elevated);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 5px;
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, var(--warning), #FFB84D);
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, var(--danger), #FF5630);
+        }
+
+        .progress-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* Game Section */
+        .game-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: 3.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .game-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .game-score {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .game-question {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            margin: 2.5rem 0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .game-question h3 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .game-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .game-option {
+            padding: 1.75rem;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .game-option:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .game-option.correct {
+            border-color: #00C781;
+            background: rgba(0, 199, 129, 0.3);
+        }
+
+        .game-option.incorrect {
+            border-color: #FF5630;
+            background: rgba(255, 86, 48, 0.3);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .quick-action {
+            padding: 1.75rem;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-action-label {
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(9, 30, 66, 0.54);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            font-size: 1.75rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.625rem;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        select.form-input {
+            cursor: pointer;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            padding: 1.75rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.625rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.625rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .badge-info {
+            background: #E9F2FF;
+            color: var(--primary);
+        }
+
+        /* Alert Box */
+        .alert-box {
+            padding: 1.25rem;
+            background: var(--danger-light);
+            border-left: 4px solid var(--danger);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-description {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-meta {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtext {
+            font-size: 0.9375rem;
+        }
+
+        /* Auth Screen */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0066FF 0%, #0052CC 50%, #667eea 100%);
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .auth-tab:hover { color: var(--text-primary); }
+        .auth-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .btn-logout:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+    </style>
+</head>
+<body>
+    <!-- Auth Screen (shown when not logged in) -->
+    <div id="authScreen" class="auth-screen" style="display: flex;">
+        <div class="auth-card">
+            <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">
+                <div class="logo-icon">🏦</div>
+                SecureBank
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showAuthTab('login')">Log In</button>
+                <button class="auth-tab" onclick="showAuthTab('register')">Create Account</button>
+            </div>
+
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="loginEmail" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Log In</button>
+            </form>
+
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="regUsername" required minlength="2" placeholder="johndoe">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="regEmail" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password (min 8 characters)</label>
+                    <input type="password" class="form-input" id="regPassword" required minlength="8" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App (shown when logged in) -->
+    <div id="appContent" style="display: none;">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <div class="logo">
+                <div class="logo-icon">🏦</div>
+                SecureBank
+            </div>
+            <ul class="nav-menu" style="flex-wrap: wrap; gap: 0.25rem;">
+                <li class="nav-item active" data-section="dashboard" onclick="showSection('dashboard', this)">Dashboard</li>
+                <li class="nav-item" data-section="transactions" onclick="showSection('transactions', this)">Transactions</li>
+                <li class="nav-item" data-section="budget" onclick="showSection('budget', this)">Budget</li>
+                <li class="nav-item" data-section="p2p" onclick="showSection('p2p', this)">P2P Pay</li>
+                <li class="nav-item" data-section="crypto" onclick="showSection('crypto', this)">Crypto</li>
+                <li class="nav-item" data-section="loans" onclick="showSection('loans', this)">Loans</li>
+                <li class="nav-item" data-section="security" onclick="showSection('security', this)">Security</li>
+                <li class="nav-item" data-section="risk" onclick="showSection('risk', this)">Risk Score</li>
+                <li class="nav-item" data-section="contracts" onclick="showSection('contracts', this)">Contracts</li>
+                <li class="nav-item" data-section="ledger" onclick="showSection('ledger', this)">Ledger</li>
+                <li class="nav-item" data-section="reserves" onclick="showSection('reserves', this)">Reserves</li>
+                <li class="nav-item" data-section="learn" onclick="showSection('learn', this)">Learn</li>
+            </ul>
+            <div class="user-info">
+                <div class="avatar" id="userAvatar">--</div>
+                <span class="user-name" id="userDisplayName">User</span>
+                <button class="btn-logout" onclick="handleLogout()">Log Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="page-header">
+                <h1 class="page-title">Welcome back, <span id="welcomeName">User</span>! 👋</h1>
+                <p class="page-subtitle">Here's what's happening with your money today</p>
+            </div>
+            
+            <!-- Account Cards (populated from API) -->
+            <div class="accounts-grid" id="accountsGrid">
+                <div class="empty-state">Loading accounts...</div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="quick-action" onclick="openModal('transfer')">
+                    <div class="quick-action-icon">💸</div>
+                    <div class="quick-action-label">Transfer Money</div>
+                </div>
+                <div class="quick-action" onclick="openModal('deposit')">
+                    <div class="quick-action-icon">💰</div>
+                    <div class="quick-action-label">Deposit Funds</div>
+                </div>
+                <div class="quick-action" onclick="openModal('pay')">
+                    <div class="quick-action-icon">💳</div>
+                    <div class="quick-action-label">Pay Bills</div>
+                </div>
+                <div class="quick-action" onclick="openModal('p2p')">
+                    <div class="quick-action-icon">📱</div>
+                    <div class="quick-action-label">P2P Pay</div>
+                </div>
+                <div class="quick-action" onclick="showSection('crypto')">
+                    <div class="quick-action-icon">₿</div>
+                    <div class="quick-action-label">Crypto</div>
+                </div>
+                <div class="quick-action" onclick="showSection('learn')">
+                    <div class="quick-action-icon">🎮</div>
+                    <div class="quick-action-label">Learn & Earn</div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Activity</h2>
+                    <button class="btn btn-secondary" onclick="showSection('transactions')">View All</button>
+                </div>
+                <div class="transaction-list" id="recentTransactions">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">No transactions yet</div>
+                        <div class="empty-subtext">Try making a deposit or payment to get started</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Section -->
+        <div id="transactions" class="section">
+            <div class="page-header">
+                <h1 class="page-title">All Transactions</h1>
+                <p class="page-subtitle">Complete history of your account activity</p>
+            </div>
+            
+            <div class="card">
+                <div class="transaction-list" id="allTransactions">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">No transactions yet</div>
+                        <div class="empty-subtext">Your transaction history will appear here</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Section -->
+        <div id="budget" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Monthly Budget</h1>
+                <p class="page-subtitle">Track your spending across categories</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Budget</div>
+                    <div class="stat-value" id="totalBudget">$3,000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Spent This Month</div>
+                    <div class="stat-value" id="totalSpent">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Remaining</div>
+                    <div class="stat-value" style="color: var(--success);" id="remaining">$3,000</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Budget Categories</h2>
+                </div>
+                <div class="budget-grid" id="budgetCategories"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">Savings Goals</h2></div>
+                <div class="form-group"><label class="form-label">Goal Name</label><input type="text" class="form-input" id="goalName" placeholder="Emergency fund"></div>
+                <div class="form-group"><label class="form-label">Target ($)</label><input type="number" class="form-input" id="goalTarget" step="0.01" min="0" placeholder="5000"></div>
+                <div class="form-group"><label class="form-label">Deadline (optional)</label><input type="date" class="form-input" id="goalDeadline"></div>
+                <button class="btn btn-primary" onclick="handleGoalCreate()">Add Goal</button>
+                <div id="budgetGoalsList" style="margin-top: 1rem;"></div>
+            </div>
+        </div>
+
+        <!-- Security Section -->
+        <div id="security" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Security & Fraud Protection</h1>
+                <p class="page-subtitle">AI-powered protection for your accounts</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Threats Blocked</div>
+                    <div class="stat-value" style="color: var(--danger);" id="threatsBlocked">0</div>
+                    <div class="stat-change positive">↑ 100% protected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Money Protected</div>
+                    <div class="stat-value" style="color: var(--success);" id="moneyProtected">$0</div>
+                    <div class="stat-change positive">↑ Fraud prevented</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Security Score</div>
+                    <div class="stat-value" style="color: var(--primary);">98%</div>
+                    <div class="stat-change positive">↑ Excellent</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🛡️ Active Protection</h2>
+                    <span class="badge badge-success">✓ All Systems Secure</span>
+                </div>
+                <div id="securityAlerts">
+                    <div class="empty-state">
+                        <div class="empty-icon">🛡️</div>
+                        <div class="empty-text">No security threats detected</div>
+                        <div class="empty-subtext">AI is actively monitoring all transactions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P2P Pay Section -->
+        <div id="p2p" class="section">
+            <div class="page-header">
+                <h1 class="page-title">P2P Payments (Zelle-style)</h1>
+                <p class="page-subtitle">Send money instantly to anyone by email</p>
+            </div>
+            <div class="quick-actions">
+                <div class="quick-action" onclick="openModal('p2p')">
+                    <div class="quick-action-icon">📱</div>
+                    <div class="quick-action-label">Send Money</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">P2P History</h2></div>
+                <div id="p2pHistory" class="transaction-list">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Crypto Section -->
+        <div id="crypto" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Crypto Wallets</h1>
+                <p class="page-subtitle">Manage your digital assets (BTC, ETH, USDC)</p>
+            </div>
+            <div class="accounts-grid" id="cryptoWallets"></div>
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">Buy / Sell Crypto</h2></div>
+                <div class="form-group"><label class="form-label">Action</label><select class="form-input" id="cryptoAction"><option value="buy">Buy</option><option value="sell">Sell</option></select></div>
+                <div class="form-group"><label class="form-label">Crypto Wallet</label><select class="form-input" id="cryptoWalletSelect"></select></div>
+                <div class="form-group"><label class="form-label">Amount (crypto units)</label><input type="number" class="form-input" id="cryptoAmount" step="0.0001" min="0" placeholder="0.01"></div>
+                <div class="form-group"><label class="form-label">Bank Account</label><select class="form-input" id="cryptoBankAccount"></select></div>
+                <button class="btn btn-primary" onclick="handleCryptoTrade()">Execute</button>
+            </div>
+        </div>
+
+        <!-- Loans Section -->
+        <div id="loans" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Loan Applications</h1>
+                <p class="page-subtitle">Apply with risk-based pricing - your score affects your rate</p>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">Apply for Loan</h2></div>
+                <div class="form-group"><label class="form-label">Amount ($)</label><input type="number" class="form-input" id="loanAmount" min="100" placeholder="10000"></div>
+                <div class="form-group"><label class="form-label">Term (months)</label><input type="number" class="form-input" id="loanTerm" min="1" max="360" placeholder="36"></div>
+                <div class="form-group"><label class="form-label">Purpose</label><input type="text" class="form-input" id="loanPurpose" placeholder="Home improvement"></div>
+                <button class="btn btn-primary" onclick="handleLoanApply()">Get Rate & Apply</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">Your Loans</h2></div>
+                <div id="loansList" class="transaction-list">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Risk Score Section -->
+        <div id="risk" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Risk Score</h1>
+                <p class="page-subtitle">Credit-like scoring (300–850) - affects loan rates</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Your Score</div><div class="stat-value" id="riskScoreValue">--</div></div>
+                <div class="stat-card"><div class="stat-label">Tier</div><div class="stat-value" id="riskTier">--</div></div>
+            </div>
+            <button class="btn btn-primary" onclick="loadRiskScore()">Refresh Score</button>
+        </div>
+
+        <!-- Smart Contracts Section -->
+        <div id="contracts" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Recurring Contracts</h1>
+                <p class="page-subtitle">Set up automatic payments (weekly, monthly, yearly)</p>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">Create Contract</h2></div>
+                <div class="form-group"><label class="form-label">Pay From</label><select class="form-input" id="contractAccount"></select></div>
+                <div class="form-group"><label class="form-label">Payee</label><input type="text" class="form-input" id="contractPayee" placeholder="Rent / Utility"></div>
+                <div class="form-group"><label class="form-label">Amount</label><input type="number" class="form-input" id="contractAmount" step="0.01" min="0" placeholder="500"></div>
+                <div class="form-group"><label class="form-label">Frequency</label><select class="form-input" id="contractFreq"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+                <button class="btn btn-primary" onclick="handleContractCreate()">Create</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">Active Contracts</h2></div>
+                <div id="contractsList" class="transaction-list">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Ledger Section -->
+        <div id="ledger" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Transaction Ledger</h1>
+                <p class="page-subtitle">Blockchain-style immutable record of your transactions</p>
+            </div>
+            <div class="card">
+                <div id="ledgerEntries" class="transaction-list">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Bank Reserves Section -->
+        <div id="reserves" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Bank Reserve Monitor</h1>
+                <p class="page-subtitle">Financial stability engine - total deposits vs reserves</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Total Deposits</div><div class="stat-value" id="reserveDeposits">$0</div></div>
+                <div class="stat-card"><div class="stat-label">Reserve Ratio</div><div class="stat-value" id="reserveRatio">10%</div></div>
+                <div class="stat-card"><div class="stat-label">Reserve Amount</div><div class="stat-value" id="reserveAmount">$0</div></div>
+                <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value" id="reserveStatus" style="color: var(--success);">Healthy</div></div>
+            </div>
+        </div>
+
+        <!-- Learn & Earn Section -->
+        <div id="learn" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Financial Literacy & Learn & Earn 🎮</h1>
+                <p class="page-subtitle">Answer financial questions and earn real money</p>
+            </div>
+            
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header"><h2 class="card-title">📚 Literacy Modules</h2></div>
+                <div id="literacyModules" class="budget-grid">Loading...</div>
+            </div>
+            <div class="game-container">
+                <h2 class="game-title">Financial Literacy Challenge (Earn Real Money!)</h2>
+                <div class="game-score" id="gameScore">$0</div>
+                <p style="font-size: 1.125rem;">Answer correctly to earn money in your account!</p>
+                
+                <div class="game-question" id="gameQuestion"></div>
+                
+                <button class="btn btn-primary" onclick="startGame()" id="startGameBtn" style="background: white; color: #667eea; font-size: 1.125rem; padding: 1rem 2.5rem;">
+                    Start Challenge
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (same as before but with updated styling) -->
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Transfer Money</h2>
+                <span class="close-modal" onclick="closeModal('transfer')">&times;</span>
+            </div>
+            <form onsubmit="handleTransfer(event)">
+                <div class="form-group">
+                    <label class="form-label">From Account</label>
+                    <select class="form-input" id="fromAccount"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">To Account</label>
+                    <select class="form-input" id="toAccount"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="transferAmount" step="0.01" min="0.01" required placeholder="$0.00">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Complete Transfer</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Deposit Money</h2>
+                <span class="close-modal" onclick="closeModal('deposit')">&times;</span>
+            </div>
+            <form onsubmit="handleDeposit(event)">
+                <div class="form-group">
+                    <label class="form-label">To Account</label>
+                    <select class="form-input" id="depositAccount"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="depositAmount" step="0.01" min="0.01" required placeholder="$0.00">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Deposit Funds</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="payModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Pay Bills</h2>
+                <span class="close-modal" onclick="closeModal('pay')">&times;</span>
+            </div>
+            <form onsubmit="handlePayment(event)">
+                <div class="form-group">
+                    <label class="form-label">From Account</label>
+                    <select class="form-input" id="payAccount"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Merchant/Payee</label>
+                    <input type="text" class="form-input" id="payee" placeholder="e.g., Electric Company" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-input" id="category">
+                        <option value="utilities">Utilities</option>
+                        <option value="groceries">Groceries</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="dining">Dining Out</option>
+                        <option value="transport">Transportation</option>
+                        <option value="shopping">Shopping</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="payAmount" step="0.01" min="0.01" required placeholder="$0.00">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="p2pModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">P2P Send Money</h2>
+                <span class="close-modal" onclick="closeModal('p2p')">&times;</span>
+            </div>
+            <form onsubmit="handleP2PSend(event)">
+                <div class="form-group">
+                    <label class="form-label">Recipient Email</label>
+                    <input type="email" class="form-input" id="p2pEmail" required placeholder="friend@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">From Account</label>
+                    <select class="form-input" id="p2pFromAccount"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="p2pAmount" step="0.01" min="0.01" required placeholder="$0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Memo (optional)</label>
+                    <input type="text" class="form-input" id="p2pMemo" placeholder="Dinner split">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================
+           SECUREBANK - API-integrated banking application
+           Data persists in database across refresh
+           ========================================================== */
+
+        // ==================== API STATE ====================
+        let apiUser = null;
+        let apiAccounts = [];
+        let apiTransactions = [];
+        let apiBudget = [];
+        let apiSecurityStats = { total_blocked: 0, money_protected: 0 };
+
+        const gameQuestions = [
+            { question: "What is a good debt-to-income ratio?", options: ["Below 36%", "50-60%", "70-80%", "Above 90%"], correct: 0, reward: 50 },
+            { question: "How much should you save for emergencies?", options: ["1 month expenses", "3-6 months expenses", "1 year expenses", "No savings needed"], correct: 1, reward: 75 },
+            { question: "What is compound interest?", options: ["Interest paid once", "Interest earned on interest", "High interest rate", "Bank fees"], correct: 1, reward: 100 },
+            { question: "When should you start investing for retirement?", options: ["Age 50+", "Age 40", "As early as possible", "Never"], correct: 2, reward: 100 },
+            { question: "What's a credit score used for?", options: ["Gaming points", "Loan approval & interest rates", "Tax deductions", "Salary negotiations"], correct: 1, reward: 75 },
+            { question: "What does 'diversification' mean in investing?", options: ["Putting all money in one stock", "Spreading investments across different assets", "Only investing in bonds", "Avoiding the stock market"], correct: 1, reward: 100 }
+        ];
+        let gameState = { score: 0, currentQuestionIndex: 0, questionsAnswered: 0 };
+
+        // ==================== API HELPERS ====================
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+        }
+        function getUserId() { return localStorage.getItem('userId'); }
+        async function apiGet(path) {
+            const r = await fetch(path, { headers: getAuthHeaders() });
+            if (r.status === 401 || r.status === 403) { handleLogout(); throw new Error('Session expired'); }
+            return r.json();
+        }
+        async function apiPost(path, body) {
+            const r = await fetch(path, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body) });
+            const data = await r.json().catch(() => ({}));
+            if (r.status === 401 || r.status === 403) { handleLogout(); throw new Error('Session expired'); }
+            if (!r.ok) throw new Error(data.error || 'Request failed');
+            return data;
+        }
+
+        // ==================== AUTH ====================
+        function showAuthScreen() {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('appContent').style.display = 'none';
+        }
+        function showApp() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+        }
+        function showAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            if (tab === 'login') {
+                document.querySelector('.auth-tab').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const data = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) }).then(r => r.json());
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userId', data.userId);
+                    showNotification('Logged in successfully', 'success');
+                    await loadUserData();
+                    showApp();
+                } else throw new Error(data.error || 'Login failed');
+            } catch (err) {
+                showNotification(err.message || 'Login failed', 'error');
+            }
+        }
+        async function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            if (password.length < 8) { showNotification('Password must be at least 8 characters', 'error'); return; }
+            try {
+                const data = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) }).then(r => r.json());
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userId', data.userId);
+                    showNotification('Account created! Welcome to SecureBank', 'success');
+                    await loadUserData();
+                    showApp();
+                } else throw new Error(data.error || 'Registration failed');
+            } catch (err) {
+                showNotification(err.message || 'Registration failed', 'error');
+            }
+        }
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            showAuthScreen();
+        }
+
+        // ==================== LOAD DATA FROM API ====================
+        async function loadUserData() {
+            const userId = getUserId();
+            if (!userId) return;
+            try {
+                apiUser = await apiGet(`/api/user/${userId}`);
+                apiAccounts = await apiGet(`/api/accounts/${userId}`);
+                apiTransactions = await apiGet(`/api/transactions/user/${userId}`);
+                apiBudget = await apiGet(`/api/budget/${userId}`);
+                apiSecurityStats = await apiGet(`/api/security/stats/${userId}`);
+
+                const name = (apiUser && apiUser.username) ? apiUser.username.charAt(0).toUpperCase() + apiUser.username.slice(1) : 'User';
+                document.getElementById('userDisplayName').textContent = name;
+                document.getElementById('userAvatar').textContent = name.slice(0, 2).toUpperCase();
+                document.getElementById('welcomeName').textContent = name;
+
+                renderAccounts();
+                populateAccountSelects();
+                updateRecentTransactions();
+                updateAllTransactions();
+                updateBudgetDisplay();
+                updateSecurityDisplay();
+            } catch (err) {
+                console.error('Load failed:', err);
+                showNotification('Failed to load data', 'error');
+            }
+        }
+
+        function renderAccounts() {
+            const grid = document.getElementById('accountsGrid');
+            if (!apiAccounts.length) { grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🏦</div><div class="empty-text">No accounts</div></div>'; return; }
+            grid.innerHTML = apiAccounts.map(acc => {
+                const last4 = (acc.account_number || '').slice(-4);
+                const isSavings = acc.account_type === 'savings';
+                return `
+                    <div class="account-card${isSavings ? ' savings' : ''}" data-account-id="${acc.id}">
+                        <div class="account-chip"></div>
+                        <div class="account-type">${acc.account_type.charAt(0).toUpperCase() + acc.account_type.slice(1)} Account</div>
+                        <div class="account-balance">$${Number(acc.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                        <div class="account-number">•••• •••• •••• ${last4}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function populateAccountSelects() {
+            const opts = apiAccounts.map(a => `<option value="${a.id}">${a.account_type.charAt(0).toUpperCase() + a.account_type.slice(1)} (•••• ${(a.account_number||'').slice(-4)})</option>`).join('');
+            ['fromAccount','toAccount','depositAccount','payAccount','p2pFromAccount','contractAccount','cryptoBankAccount'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = opts;
+            });
+        }
+
+        // ==================== UI FUNCTIONS ====================
+
+        function showSection(sectionName, navEl) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const section = document.getElementById(sectionName);
+            if (section) section.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (navEl) navEl.classList.add('active');
+            else document.querySelector(`.nav-item[data-section="${sectionName}"]`)?.classList.add('active');
+            if (sectionName === 'budget') { updateBudgetDisplay(); loadBudgetGoals(); }
+            else if (sectionName === 'security') updateSecurityDisplay();
+            else if (sectionName === 'transactions') updateAllTransactions();
+            else if (sectionName === 'p2p') loadP2PHistory();
+            else if (sectionName === 'crypto') loadCryptoWallets();
+            else if (sectionName === 'loans') loadLoans();
+            else if (sectionName === 'risk') loadRiskScore();
+            else if (sectionName === 'contracts') loadContracts();
+            else if (sectionName === 'ledger') loadLedger();
+            else if (sectionName === 'reserves') loadReserves();
+            else if (sectionName === 'learn') { document.getElementById('gameScore').textContent = '$' + gameState.score; loadLiteracyModules(); }
+        }
+
+        function updateAllTransactions() {
+            const allContainer = document.getElementById('allTransactions');
+            if (!apiTransactions || !apiTransactions.length) {
+                allContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">No transactions yet</div><div class="empty-subtext">Your transaction history will appear here</div></div>';
+                return;
+            }
+            allContainer.innerHTML = apiTransactions.map(t => createTransactionHTML(t)).join('');
+        }
+
+        function updateRecentTransactions() {
+            const recentContainer = document.getElementById('recentTransactions');
+            const recent = (apiTransactions || []).slice(0, 5);
+            if (!recent.length) {
+                recentContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">No transactions yet</div><div class="empty-subtext">Try making a deposit or payment to get started</div></div>';
+                return;
+            }
+            recentContainer.innerHTML = recent.map(t => createTransactionHTML(t)).join('');
+        }
+
+        function createTransactionHTML(t) {
+            const amt = Number(t.amount);
+            const isPositive = t.type === 'deposit' || (t.type === 'transfer' && amt > 0);
+            const amountStr = isPositive ? `+$${Math.abs(amt).toFixed(2)}` : `-$${Math.abs(amt).toFixed(2)}`;
+            const icon = t.type === 'deposit' ? '💰' : t.type === 'transfer' ? '💸' : '💳';
+            const desc = t.description || t.merchant || (t.type === 'transfer' ? 'Transfer' : 'Payment');
+            const fraudBadge = t.fraud_status === 'blocked' ? '<span class="badge badge-danger">🛡️ BLOCKED</span>' : t.fraud_status === 'flagged' ? '<span class="badge badge-warning">⚠️ FLAGGED</span>' : '';
+            const date = t.created_at ? new Date(t.created_at).toLocaleString() : '';
+            return `<div class="transaction-item ${isPositive ? 'income' : 'expense'}"><div class="transaction-icon">${icon}</div><div class="transaction-details"><div class="transaction-name">${desc} ${fraudBadge}</div><div class="transaction-meta">${date} • ${t.category || 'general'}</div></div><div class="transaction-amount ${isPositive ? 'positive' : 'negative'}">${amountStr}</div></div>`;
+        }
+
+        function updateBudgetDisplay() {
+            const budget = apiBudget || [];
+            const totalLimit = budget.reduce((s, b) => s + Number(b.limit_amount || 0), 0);
+            const totalSpent = budget.reduce((s, b) => s + Number(b.spent_amount || 0), 0);
+            const remaining = totalLimit - totalSpent;
+            document.getElementById('totalBudget').textContent = '$' + totalLimit.toLocaleString();
+            document.getElementById('totalSpent').textContent = '$' + totalSpent.toLocaleString();
+            document.getElementById('remaining').textContent = '$' + remaining.toLocaleString();
+            const container = document.getElementById('budgetCategories');
+            container.innerHTML = budget.map(b => {
+                const limit = Number(b.limit_amount || 0);
+                const spent = Number(b.spent_amount || 0);
+                const pct = limit ? (spent / limit) * 100 : 0;
+                const cls = pct >= 90 ? 'danger' : pct >= 75 ? 'warning' : '';
+                const name = (b.category || '').charAt(0).toUpperCase() + (b.category || '').slice(1);
+                return `<div class="budget-category"><div class="budget-header"><span class="category-name">${name}</span><span class="budget-spent">$${spent.toFixed(2)} / $${limit}</span></div><div class="progress-bar"><div class="progress-fill ${cls}" style="width: ${Math.min(pct, 100)}%"></div></div><div class="progress-text">${Math.round(pct)}% used</div></div>`;
+            }).join('');
+        }
+
+        function updateSecurityDisplay() {
+            const stats = apiSecurityStats || {};
+            document.getElementById('threatsBlocked').textContent = stats.total_blocked ?? 0;
+            document.getElementById('moneyProtected').textContent = '$' + Number(stats.money_protected || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+            const blocked = (apiTransactions || []).filter(t => t.fraud_status === 'blocked');
+            const alertsContainer = document.getElementById('securityAlerts');
+            if (!blocked.length) {
+                alertsContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-text">No security threats detected</div><div class="empty-subtext">AI is actively monitoring all transactions</div></div>';
+            } else {
+                alertsContainer.innerHTML = blocked.map(t => `<div class="alert-box"><div class="alert-title">🚨 Fraud Attempt Blocked</div><div class="alert-description"><strong>${t.merchant || t.description || 'Payment'}</strong> - $${Math.abs(Number(t.amount)).toFixed(2)}</div><div class="alert-meta">Risk: ${t.fraud_score || 0}% | ${new Date(t.created_at).toLocaleString()}</div></div>`).join('');
+            }
+        }
+
+        // ==================== TRANSACTION HANDLERS ====================
+
+        async function handleDeposit(event) {
+            event.preventDefault();
+            const accountId = document.getElementById('depositAccount').value;
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            if (!accountId || !amount || amount <= 0) { showNotification('Please enter a valid amount', 'error'); return; }
+            try {
+                await apiPost('/api/transactions/deposit', { accountId, amount, description: 'Direct Deposit' });
+                await loadUserData();
+                closeModal('deposit');
+                document.getElementById('depositAmount').value = '';
+                showNotification(`✓ Deposited $${amount.toFixed(2)}`, 'success');
+            } catch (err) { showNotification(err.message || 'Deposit failed', 'error'); }
+        }
+
+        async function handleTransfer(event) {
+            event.preventDefault();
+            const fromAccountId = document.getElementById('fromAccount').value;
+            const toAccountId = document.getElementById('toAccount').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            if (!fromAccountId || !toAccountId || !amount || amount <= 0) { showNotification('Please enter a valid amount', 'error'); return; }
+            if (fromAccountId === toAccountId) { showNotification('Cannot transfer to the same account', 'error'); return; }
+            try {
+                await apiPost('/api/transactions/transfer', { fromAccountId, toAccountId, amount });
+                await loadUserData();
+                closeModal('transfer');
+                document.getElementById('transferAmount').value = '';
+                showNotification(`✓ Transferred $${amount.toFixed(2)}`, 'success');
+            } catch (err) { showNotification(err.message || 'Transfer failed', 'error'); }
+        }
+
+        async function handlePayment(event) {
+            event.preventDefault();
+            const accountId = document.getElementById('payAccount').value;
+            const merchant = document.getElementById('payee').value.trim();
+            const category = document.getElementById('category').value;
+            const amount = parseFloat(document.getElementById('payAmount').value);
+            if (!accountId || !merchant || !amount || amount <= 0) { showNotification('Please fill all fields', 'error'); return; }
+            try {
+                const data = await apiPost('/api/transactions/payment', { accountId, amount, merchant, category });
+                await loadUserData();
+                closeModal('pay');
+                document.getElementById('payee').value = '';
+                document.getElementById('payAmount').value = '';
+                if (data.blocked) showNotification(`🚨 Transaction blocked: ${(data.fraud && data.fraud.reasons) ? data.fraud.reasons.join(', ') : ''}`, 'error');
+                else if (data.fraud && data.fraud.status === 'flagged') showNotification(`⚠️ Payment flagged for review`, 'warning');
+                else showNotification(`✓ Payment of $${amount.toFixed(2)} to ${merchant} successful`, 'success');
+            } catch (err) { showNotification(err.message || 'Payment failed', 'error'); }
+        }
+
+        // ==================== P2P ====================
+        async function handleP2PSend(e) {
+            e.preventDefault();
+            const toEmail = document.getElementById('p2pEmail').value.trim();
+            const fromAccountId = document.getElementById('p2pFromAccount').value;
+            const amount = parseFloat(document.getElementById('p2pAmount').value);
+            const memo = document.getElementById('p2pMemo').value.trim();
+            if (!toEmail || !fromAccountId || !amount || amount <= 0) { showNotification('Fill all required fields', 'error'); return; }
+            try {
+                await apiPost('/api/p2p/send', { toEmail, fromAccountId, amount, memo });
+                await loadUserData();
+                loadP2PHistory();
+                closeModal('p2p');
+                document.getElementById('p2pEmail').value = '';
+                document.getElementById('p2pAmount').value = '';
+                document.getElementById('p2pMemo').value = '';
+                showNotification('P2P transfer sent!', 'success');
+            } catch (err) { showNotification(err.message || 'P2P failed', 'error'); }
+        }
+        async function loadP2PHistory() {
+            const el = document.getElementById('p2pHistory');
+            if (!el) return;
+            try {
+                const rows = await apiGet(`/api/p2p/history/${getUserId()}`);
+                if (!rows.length) { el.innerHTML = '<div class="empty-state">No P2P transfers yet</div>'; return; }
+                el.innerHTML = rows.map(p => {
+                    const sent = p.sender_user_id == getUserId();
+                    return `<div class="transaction-item ${sent ? 'expense' : 'income'}"><div class="transaction-icon">📱</div><div class="transaction-details"><div class="transaction-name">${sent ? 'To: ' + (p.receiver_email||'') : 'From: ' + (p.sender_email||'')} ${p.memo ? '• ' + p.memo : ''}</div><div class="transaction-meta">${new Date(p.created_at).toLocaleString()}</div></div><div class="transaction-amount ${sent ? 'negative' : 'positive'}">${sent ? '-' : '+'}$${Math.abs(Number(p.amount)).toFixed(2)}</div></div>`;
+                }).join('');
+            } catch (e) { el.innerHTML = '<div class="empty-state">Failed to load</div>'; }
+        }
+
+        // ==================== CRYPTO ====================
+        let apiCryptoWallets = [];
+        async function loadCryptoWallets() {
+            const grid = document.getElementById('cryptoWallets');
+            const sel = document.getElementById('cryptoWalletSelect');
+            if (!grid) return;
+            try {
+                apiCryptoWallets = await apiGet(`/api/crypto/wallets/${getUserId()}`);
+                grid.innerHTML = apiCryptoWallets.map(w => `<div class="account-card savings"><div class="account-type">${w.symbol}</div><div class="account-balance">${Number(w.balance || 0).toFixed(4)}</div><div class="account-number">${(w.wallet_address||'').slice(0,12)}...</div></div>`).join('');
+                if (sel) sel.innerHTML = apiCryptoWallets.map(w => `<option value="${w.id}">${w.symbol} - ${Number(w.balance||0).toFixed(4)}</option>`).join('');
+            } catch (e) { grid.innerHTML = '<div class="empty-state">Failed to load</div>'; }
+        }
+        async function handleCryptoTrade() {
+            const action = document.getElementById('cryptoAction').value;
+            const walletId = document.getElementById('cryptoWalletSelect').value;
+            const amount = parseFloat(document.getElementById('cryptoAmount').value);
+            const accountId = document.getElementById('cryptoBankAccount').value;
+            if (!walletId || !amount || amount <= 0 || !accountId) { showNotification('Fill all fields', 'error'); return; }
+            try {
+                if (action === 'buy') await apiPost('/api/crypto/buy', { userId: getUserId(), walletId, amount, fromAccountId: accountId });
+                else await apiPost('/api/crypto/sell', { userId: getUserId(), walletId, amount, toAccountId: accountId });
+                loadCryptoWallets();
+                document.getElementById('cryptoAmount').value = '';
+                showNotification(`Crypto ${action} successful`, 'success');
+            } catch (err) { showNotification(err.message || 'Trade failed', 'error'); }
+        }
+
+        // ==================== LOANS ====================
+        async function handleLoanApply() {
+            const amount = parseFloat(document.getElementById('loanAmount').value);
+            const termMonths = parseInt(document.getElementById('loanTerm').value);
+            const purpose = document.getElementById('loanPurpose').value.trim();
+            if (!amount || amount < 100 || !termMonths || termMonths < 1) { showNotification('Valid amount (min $100) and term required', 'error'); return; }
+            try {
+                const data = await apiPost('/api/loans/apply', { amount, termMonths, purpose });
+                showNotification(`Applied! Risk: ${data.riskScore}% | Est. rate: ${data.interestRate}%`, 'success');
+                loadLoans();
+            } catch (err) { showNotification(err.message || 'Application failed', 'error'); }
+        }
+        async function loadLoans() {
+            const el = document.getElementById('loansList');
+            if (!el) return;
+            try {
+                const rows = await apiGet(`/api/loans/${getUserId()}`);
+                if (!rows.length) { el.innerHTML = '<div class="empty-state">No loan applications</div>'; return; }
+                el.innerHTML = rows.map(l => `<div class="transaction-item"><div class="transaction-details"><div class="transaction-name">$${Number(l.amount).toLocaleString()} @ ${l.interest_rate}% • ${l.term_months} mo</div><div class="transaction-meta">${l.status} • Risk: ${l.risk_score}% • ${new Date(l.created_at).toLocaleString()}</div></div><div class="transaction-amount">${l.status}</div></div>`).join('');
+            } catch (e) { el.innerHTML = '<div class="empty-state">Failed to load</div>'; }
+        }
+
+        // ==================== RISK ====================
+        async function loadRiskScore() {
+            try {
+                const data = await apiGet(`/api/risk/score/${getUserId()}`);
+                document.getElementById('riskScoreValue').textContent = data.score;
+                document.getElementById('riskTier').textContent = data.tier.charAt(0).toUpperCase() + data.tier.slice(1);
+            } catch (e) {}
+        }
+
+        // ==================== CONTRACTS ====================
+        async function handleContractCreate() {
+            const accountId = document.getElementById('contractAccount').value;
+            const payee = document.getElementById('contractPayee').value.trim();
+            const amount = parseFloat(document.getElementById('contractAmount').value);
+            const frequency = document.getElementById('contractFreq').value;
+            if (!accountId || !payee || !amount || amount <= 0) { showNotification('Fill all fields', 'error'); return; }
+            try {
+                await apiPost('/api/contracts/create', { accountId, payee, amount, frequency });
+                loadContracts();
+                document.getElementById('contractPayee').value = '';
+                document.getElementById('contractAmount').value = '';
+                showNotification('Recurring contract created', 'success');
+            } catch (err) { showNotification(err.message || 'Failed', 'error'); }
+        }
+        async function loadContracts() {
+            const el = document.getElementById('contractsList');
+            if (!el) return;
+            try {
+                const rows = await apiGet(`/api/contracts/${getUserId()}`);
+                if (!rows.length) { el.innerHTML = '<div class="empty-state">No active contracts</div>'; return; }
+                el.innerHTML = rows.map(c => `<div class="transaction-item"><div class="transaction-details"><div class="transaction-name">${c.payee} - $${Number(c.amount).toFixed(2)} ${c.frequency}</div><div class="transaction-meta">Next: ${c.next_due}</div></div></div>`).join('');
+            } catch (e) { el.innerHTML = '<div class="empty-state">Failed to load</div>'; }
+        }
+
+        // ==================== LEDGER ====================
+        async function loadLedger() {
+            const el = document.getElementById('ledgerEntries');
+            if (!el) return;
+            try {
+                const rows = await apiGet(`/api/ledger/${getUserId()}`);
+                if (!rows.length) { el.innerHTML = '<div class="empty-state">No ledger entries</div>'; return; }
+                el.innerHTML = rows.map(r => `<div class="transaction-item"><div class="transaction-details"><div class="transaction-name">${r.type} - ${r.description || ''}</div><div class="transaction-meta">${r.account_type} • Hash: ${(r.entryHash||'').slice(0,16)}...</div></div><div class="transaction-amount">$${Number(r.amount).toFixed(2)}</div></div>`).join('');
+            } catch (e) { el.innerHTML = '<div class="empty-state">Failed to load</div>'; }
+        }
+
+        async function handleGoalCreate() {
+            const goalName = document.getElementById('goalName').value.trim();
+            const targetAmount = parseFloat(document.getElementById('goalTarget').value);
+            const deadline = document.getElementById('goalDeadline').value || null;
+            if (!goalName || !targetAmount || targetAmount <= 0) { showNotification('Valid goal name and target required', 'error'); return; }
+            try {
+                await apiPost('/api/budget/goals', { userId: getUserId(), goalName, targetAmount, deadline });
+                loadBudgetGoals();
+                document.getElementById('goalName').value = '';
+                document.getElementById('goalTarget').value = '';
+                document.getElementById('goalDeadline').value = '';
+                showNotification('Goal added', 'success');
+            } catch (err) { showNotification(err.message || 'Failed', 'error'); }
+        }
+        async function loadBudgetGoals() {
+            try {
+                const rows = await apiGet(`/api/budget/goals/${getUserId()}`);
+                const el = document.getElementById('budgetGoalsList');
+                if (!el) return;
+                if (!rows.length) { el.innerHTML = '<div class="empty-state" style="padding: 1rem;">No goals yet</div>'; return; }
+                el.innerHTML = rows.map(g => {
+                    const pct = Number(g.target_amount) ? (Number(g.current_amount || 0) / Number(g.target_amount)) * 100 : 0;
+                    return `<div class="budget-category"><div class="budget-header"><span class="category-name">${g.goal_name}</span><span>$${Number(g.current_amount||0).toFixed(0)} / $${Number(g.target_amount).toFixed(0)}</span></div><div class="progress-bar"><div class="progress-fill" style="width: ${Math.min(pct, 100)}%"></div></div></div>`;
+                }).join('');
+            } catch (e) {}
+        }
+
+        async function loadLiteracyModules() {
+            try {
+                const rows = await fetch('/api/literacy/modules').then(r => r.json());
+                const el = document.getElementById('literacyModules');
+                if (el && rows.length) el.innerHTML = rows.map(m => `<div class="budget-category"><div class="category-name">${m.title}</div><div class="progress-text">${(m.topics||[]).join(', ')}</div></div>`).join('');
+            } catch (e) {}
+        }
+
+        // ==================== RESERVES ====================
+        async function loadReserves() {
+            try {
+                const data = await apiGet('/api/reserves');
+                document.getElementById('reserveDeposits').textContent = '$' + Number(data.totalDeposits || 0).toLocaleString();
+                document.getElementById('reserveRatio').textContent = (data.reserveRatio || 10) + '%';
+                document.getElementById('reserveAmount').textContent = '$' + Number(data.reserveAmount || 0).toLocaleString();
+                const s = document.getElementById('reserveStatus');
+                if (s) { s.textContent = data.status || 'Healthy'; s.style.color = data.status === 'healthy' ? 'var(--success)' : 'var(--danger)'; }
+            } catch (e) {}
+        }
+
+        // ==================== GAME FUNCTIONS ====================
+
+        function startGame() {
+            gameState.currentQuestionIndex = 0;
+            gameState.questionsAnswered = 0;
+            gameState.score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (gameState.currentQuestionIndex >= gameQuestions.length) {
+                showGameComplete();
+                return;
+            }
+
+            const question = gameQuestions[gameState.currentQuestionIndex];
+            document.getElementById('startGameBtn').style.display = 'none';
+
+            document.getElementById('gameQuestion').innerHTML = `
+                <h3>${question.question}</h3>
+                <div class="game-options">
+                    ${question.options.map((option, index) => `
+                        <div class="game-option" onclick="checkAnswer(${index})">
+                            ${option}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function checkAnswer(selectedIndex) {
+            const question = gameQuestions[gameState.currentQuestionIndex];
+            const options = document.querySelectorAll('.game-option');
+
+            options.forEach((option, index) => {
+                if (index === question.correct) option.classList.add('correct');
+                else if (index === selectedIndex) option.classList.add('incorrect');
+                option.style.pointerEvents = 'none';
+            });
+
+            if (selectedIndex === question.correct) {
+                gameState.score += question.reward;
+                const checking = apiAccounts.find(a => a.account_type === 'checking');
+                if (checking) {
+                    try {
+                        await apiPost('/api/transactions/deposit', { accountId: checking.id, amount: question.reward, description: 'Game Earnings: Correct Answer' });
+                        await loadUserData();
+                    } catch (e) { console.error('Game deposit failed:', e); }
+                }
+                showNotification(`🎉 Correct! +$${question.reward} earned and added to checking!`, 'success');
+            } else {
+                showNotification('❌ Incorrect. Try the next question!', 'error');
+            }
+
+            document.getElementById('gameScore').textContent = '$' + gameState.score;
+            gameState.questionsAnswered++;
+
+            setTimeout(() => {
+                gameState.currentQuestionIndex++;
+                loadQuestion();
+            }, 2000);
+        }
+
+        function showGameComplete() {
+            document.getElementById('gameQuestion').innerHTML = `
+                <h3 style="font-size: 2.5rem;">🎉 Congratulations!</h3>
+                <p style="font-size: 1.5rem; margin-top: 1.5rem;">You earned <strong>$${gameState.score}</strong>!</p>
+                <p style="margin-top: 1rem; font-size: 1.125rem;">Money has been added to your checking account.</p>
+                <p style="margin-top: 1rem; opacity: 0.9;">Questions answered: ${gameState.questionsAnswered} / ${gameQuestions.length}</p>
+            `;
+            document.getElementById('startGameBtn').textContent = 'Play Again';
+            document.getElementById('startGameBtn').style.display = 'block';
+            gameState.score = 0;
+            loadUserData();
+        }
+
+        // ==================== MODAL FUNCTIONS ====================
+
+        function openModal(type) {
+            document.getElementById(type + 'Modal').classList.add('active');
+            
+            setTimeout(() => {
+                const firstInput = document.querySelector(`#${type}Modal input, #${type}Modal select`);
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function closeModal(type) {
+            document.getElementById(type + 'Modal').classList.remove('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                const modals = ['transfer', 'deposit', 'pay', 'p2p'];
+                modals.forEach(modal => {
+                    if (event.target.id === modal + 'Modal') {
+                        closeModal(modal);
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = ['transfer', 'deposit', 'pay', 'p2p'];
+                modals.forEach(modal => {
+                    const modalEl = document.getElementById(modal + 'Modal');
+                    if (modalEl && modalEl.classList.contains('active')) {
+                        closeModal(modal);
+                    }
+                });
+            }
+        });
+
+        // ==================== NOTIFICATIONS ====================
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            
+            const colors = {
+                success: '#00875A',
+                error: '#DE350B',
+                warning: '#FF8B00'
+            };
+
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type] || colors.success};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 400px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            `;
+            
+            notification.innerHTML = `
+                <span style="font-size: 1.25rem;">${icons[type] || icons.success}</span>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { opacity: 0; transform: translateX(100px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                @keyframes slideOutRight {
+                    from { opacity: 1; transform: translateX(0); }
+                    to { opacity: 0; transform: translateX(100px); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                setTimeout(() => {
+                    notification.remove();
+                    style.remove();
+                }, 300);
+            }, 4000);
+        }
+
+        // ==================== INITIALIZATION ====================
+
+        window.addEventListener('load', async () => {
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+            if (token && userId) {
+                try {
+                    await loadUserData();
+                    showApp();
+                } catch (err) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userId');
+                    showAuthScreen();
+                }
+            } else {
+                showAuthScreen();
+            }
+        });
+
+        document.addEventListener('input', function(event) {
+            if (event.target.type === 'number') {
+                if (event.target.value < 0) {
+                    event.target.value = '';
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
