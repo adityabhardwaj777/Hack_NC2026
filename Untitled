@@ -1,0 +1,3 @@
+node_modules/
+securebank.db
+.env
