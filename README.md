@@ -1,0 +1,1 @@
+SecureBank is an AI-powered financial simulator and money management platform that helps users track spending, manage accounts, and learn investment and financial literacy concepts through interactive gameplay. It blends realistic banking simulations with educational challenges to make understanding personal finance engaging and practical.
